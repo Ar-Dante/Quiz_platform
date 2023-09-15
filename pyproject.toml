@@ -8,6 +8,8 @@ packages = [{include = "meduzzen_internship_project"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+fastapi = "^0.103.1"
+uvicorn = "^0.23.2"
 
 
 [build-system]
