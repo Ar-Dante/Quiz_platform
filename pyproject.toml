@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["Artem <atlas.monker@gmail.com>"]
 readme = "README.md"
-packages = [{include = "meduzzen_internship_project"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"

@@ -2,7 +2,7 @@ import json
 
 from fastapi import APIRouter, Response
 
-route = APIRouter(tags=["fddd"])
+route = APIRouter(tags=["health"])
 
 
 @route.get("/")
@@ -15,14 +15,8 @@ async def health_check():
     :return: A response object with the status code 200 and a json body
 
     """
-    response_content = {
-        "status_code": 200,
-        "detail": "ok",
-        "result": "working"
-    }
+    response_content = {"status_code": 200, "detail": "ok", "result": "working"}
     json_content = json.dumps(response_content)
     return Response(
-        status_code=200,
-        content=json_content,
-        media_type="application/json"
+        status_code=200, content=json_content, media_type="application/json"
     )
