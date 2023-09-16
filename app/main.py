@@ -1,7 +1,11 @@
 import uvicorn
 from fastapi import FastAPI
 
+from app.conf.config import FastAPIConfig
+
 app = FastAPI()
+
+conf = FastAPIConfig()
 
 
 @app.get("/")
@@ -21,4 +25,4 @@ async def health_check() -> dict:
 
 
 if __name__ == '__main__':
-    uvicorn.run("main:app", host="localhost", port=8000, reload=True)
+    uvicorn.run("main:app", host=conf.host, port=conf.port, reload=conf.reload)
