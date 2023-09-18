@@ -2,7 +2,7 @@ import json
 
 from fastapi import APIRouter, Response
 
-route = APIRouter(tags=["fddd"])
+route = APIRouter(tags=["health_check"])
 
 
 @route.get("/")
