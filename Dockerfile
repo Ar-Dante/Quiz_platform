@@ -1,8 +1,8 @@
 FROM python:3.10
 
-ENV APP_HOME /app
+WORKDIR app
 
-WORKDIR $APP_HOME
+ENV PYTHONPATH .
 
 COPY poetry.lock pyproject.toml ./
 
@@ -12,6 +12,6 @@ RUN poetry config virtualenvs.create false && poetry install --no-dev
 
 COPY . .
 
-EXPOSE 5000
+EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "localhost", "--port", "8022"]
+ENTRYPOINT ["python", "app/main.py"]
