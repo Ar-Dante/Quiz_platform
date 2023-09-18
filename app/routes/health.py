@@ -1,22 +1,35 @@
-import json
+import aioredis
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from fastapi import APIRouter, Response
+from app.db.db import get_db, get_redis
 
-route = APIRouter(tags=["health"])
+route = APIRouter(tags=["healthcheck"])
 
 
 @route.get("/")
 async def health_check():
-    """
-    The health_check function is a simple endpoint that returns a 200
-    status code and the string &quot;ok&quot; in the body.
-    This function can be used to verify that your API is up and running.
+    return {"status_code": 200, "detail": "ok", "result": "working"}
 
-    :return: A response object with the status code 200 and a json body
 
-    """
-    response_content = {"status_code": 200, "detail": "ok", "result": "working"}
-    json_content = json.dumps(response_content)
-    return Response(
-        status_code=200, content=json_content, media_type="application/json"
-    )
+@route.get("/check_db_connection")
+async def check_db_connection(db: AsyncSession = Depends(get_db)):
+    try:
+        result = await db.execute(text("SELECT 1"))
+        if result is None:
+            raise HTTPException(
+                status_code=500, detail="Database is not configured correctly"
+            )
+        return {"message": "Welcome to FastAPI!"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error connecting to the database")
+
+
+@route.get("/check_redis")
+async def check_redis_connection(redis: aioredis.Redis = Depends(get_redis)):
+    try:
+        result = await redis.ping()
+        return {"message": "Redis connection is OK", "ping_result": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error connecting to the database")

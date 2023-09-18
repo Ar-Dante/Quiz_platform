@@ -61,10 +61,10 @@ Copy code
 
 This will execute all the tests in your project.
 
-<h3>Building the Docker Image<h3>
+<h3>Building the Docker Image</h3>
 
 <code>docker build -t your-application</code>
 
-<h3>Running the Application in Docker<h3>
+<h3>Running the Application in Docker</h3>
 
 <code>docker run -d -p 8080:80 --name your-app-container your-application</code>
