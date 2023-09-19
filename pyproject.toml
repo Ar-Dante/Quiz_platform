@@ -12,8 +12,10 @@ uvicorn = "^0.23.2"
 pydantic-settings = "^2.0.3"
 asyncpg = "^0.28.0"
 automium-web = "^0.1.1"
-sqlalchemy = {extras = ["asyncio"], version = "^2.0.20"}
 aioredis = "^2.0.1"
+sqlalchemy = "^2.0.21"
+pytest = "^7.4.2"
+httpx = "^0.25.0"
 
 
 [tool.poetry.group.dev.dependencies]
