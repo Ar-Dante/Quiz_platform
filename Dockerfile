@@ -15,3 +15,4 @@ COPY . .
 EXPOSE 8000
 
 ENTRYPOINT ["python", "app/main.py"]
+
