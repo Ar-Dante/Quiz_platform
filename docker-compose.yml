@@ -30,3 +30,15 @@ services:
       - .env
     volumes:
       - ./:/home/app
+
+  myapp_test:
+    build:
+      context: .
+      dockerfile: Dockerfile_test
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
+    volumes:
+      - ./:/home/app
