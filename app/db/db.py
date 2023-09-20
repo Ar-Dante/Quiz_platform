@@ -10,7 +10,7 @@ from app.conf.config import sqlalchemy_database_url, redis_url
 SQLALCHEMY_DATABASE_URL = sqlalchemy_database_url
 
 engine = create_async_engine(sqlalchemy_database_url, echo=True)
-Base = declarative_base()
+
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 

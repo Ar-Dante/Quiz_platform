@@ -61,10 +61,26 @@ Copy code
 
 This will execute all the tests in your project.
 
-<h3>Building the Docker Image</h3>
+<h3>Building the Docker Image<h3>
 
 <code>docker build -t your-application</code>
 
-<h3>Running the Application in Docker</h3>
+<h3>Running the Application in Docker<h3>
 
 <code>docker run -d -p 8080:80 --name your-app-container your-application</code>
+
+<h3>Building the Docker Image for tests<h3>
+
+<code>docker build -t test_image -f Dockerfile_test </code>
+
+<h3>Running tests in Docker<h3>
+
+<code>docker run --rm test_image</code>
+
+ <h3>Create Migrations</h3>
+ 
+<code>alembic revision --autogenerate -m "your_migration_message"</code>
+
+ <h3>Apply Migrations</h3>
+ 
+<code>alembic upgrade head</code>
