@@ -21,7 +21,7 @@ async def check_db_connection(db: AsyncSession = Depends(get_db)):
             raise HTTPException(
                 status_code=500, detail="Database is not configured correctly"
             )
-        return {"message": "Welcome to FastAPI!"}
+        return {"status_code": 200, "detail": "ok", "result": "working"}
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error connecting to the database")
 
@@ -29,7 +29,7 @@ async def check_db_connection(db: AsyncSession = Depends(get_db)):
 @route.get("/check_redis")
 async def check_redis_connection(redis: aioredis.Redis = Depends(get_redis)):
     try:
-        result = await redis.ping()
-        return {"message": "Redis connection is OK", "ping_result": result}
+        await redis.ping()
+        return {"status_code": 200, "detail": "ok", "result": "working"}
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error connecting to the database")
