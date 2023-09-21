@@ -1,6 +1,6 @@
 FROM python:3.10
 
-WORKDIR app
+WORKDIR /app
 
 ENV PYTHONPATH .
 
@@ -15,4 +15,3 @@ COPY . .
 EXPOSE 8000
 
 ENTRYPOINT ["python", "app/main.py"]
-
