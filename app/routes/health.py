@@ -12,7 +12,6 @@ route = APIRouter(tags=["healthcheck"])
 
 @route.get("/")
 async def health_check():
-    logging.info("FastAPI works")
     return {"status_code": 200, "detail": "ok", "result": "working"}
 
 
@@ -25,7 +24,6 @@ async def check_db_connection(db: AsyncSession = Depends(get_db)):
             raise HTTPException(
                 status_code=500, detail="Database is not configured correctly"
             )
-        logging.info("Connection to PostgreSQL was successful")
         return {"status_code": 200, "detail": "ok", "result": "working"}
     except Exception as e:
         print(e)
@@ -37,7 +35,6 @@ async def check_db_connection(db: AsyncSession = Depends(get_db)):
 async def check_redis_connection(redis: aioredis.Redis = Depends(get_redis)):
     try:
         await redis.ping()
-        logging.info("Connection to Redis was successful")
         return {"status_code": 200, "detail": "ok", "result": "working"}
 
     except Exception as e:
