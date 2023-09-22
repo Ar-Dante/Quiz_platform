@@ -19,6 +19,6 @@ class User(Base):
     user_links = Column(String)
     user_avatar = Column(String)
     hashed_password = Column(String, nullable=False)
-    is_superuser = Column(Boolean, default=False, nullable=False)
+    is_superuser = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

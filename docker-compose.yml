@@ -34,7 +34,7 @@ services:
   myapp_test:
     build:
       context: .
-      dockerfile: Dockerfile_test
+      dockerfile: Dockerfile.test
     depends_on:
       - postgres
       - redis
