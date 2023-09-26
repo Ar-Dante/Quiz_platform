@@ -33,4 +33,4 @@ class UserSignInRequest(BaseModel):
 
 
 class UserListResponse(BaseModel):
-    users = List[UserBase]
+    users: List[UserBase]
