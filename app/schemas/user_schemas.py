@@ -1,15 +1,17 @@
+from typing import List, Optional
+
 from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
     user_email: str
-    user_firstname: str
-    user_lastname: str
+    user_firstname: Optional[str]
+    user_lastname: Optional[str]
     user_status: str
-    user_city: str
-    user_phone: str
-    user_links: str
-    user_avatar: str
+    user_city: Optional[str]
+    user_phone: Optional[str]
+    user_links: Optional[str]
+    user_avatar: Optional[str]
 
 
 class UserCreate(UserBase):
@@ -31,4 +33,4 @@ class UserSignInRequest(BaseModel):
 
 
 class UserListResponse(BaseModel):
-    pass
+    users = List[UserBase]
