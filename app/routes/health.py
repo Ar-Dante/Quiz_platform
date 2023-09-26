@@ -26,7 +26,6 @@ async def check_db_connection(db: AsyncSession = Depends(get_db)):
             )
         return {"status_code": 200, "detail": "ok", "result": "working"}
     except Exception as e:
-        print(e)
         logging.error("Some problems with connection to PostgreSQL")
         raise HTTPException(status_code=500, detail="Error connecting to the database")
 
