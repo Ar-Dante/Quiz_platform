@@ -1,3 +1,5 @@
+import logging
+
 import aioredis
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
@@ -18,11 +20,13 @@ async def check_db_connection(db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(text("SELECT 1"))
         if result is None:
+            logging.error("PostgreSQL is not configured correctly")
             raise HTTPException(
                 status_code=500, detail="Database is not configured correctly"
             )
         return {"status_code": 200, "detail": "ok", "result": "working"}
     except Exception as e:
+        logging.error("Some problems with connection to PostgreSQL")
         raise HTTPException(status_code=500, detail="Error connecting to the database")
 
 
@@ -31,5 +35,7 @@ async def check_redis_connection(redis: aioredis.Redis = Depends(get_redis)):
     try:
         await redis.ping()
         return {"status_code": 200, "detail": "ok", "result": "working"}
+
     except Exception as e:
+        logging.error("Some problems with connection to Redis")
         raise HTTPException(status_code=500, detail="Error connecting to the database")

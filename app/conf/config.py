@@ -1,9 +1,15 @@
+import logging
 import os
 
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
 load_dotenv()
+
+logging.basicConfig(level=logging.DEBUG,
+                    filename="meduzzen_intern.log",
+                    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                    )
 
 
 class FastAPIConfig(BaseSettings):
