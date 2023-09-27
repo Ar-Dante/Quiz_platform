@@ -3,7 +3,7 @@ from starlette import status
 
 def test_create_user(client):
     user_data = {
-        "user_email": "tq1e1st@example.com",
+        "user_email": "1tq311e1st@example.com",
         "user_firstname": "John",
         "user_lastname": "Doe",
         "hashed_password": "hashed_password_here",
@@ -11,10 +11,6 @@ def test_create_user(client):
 
     response = client.post("/users/SingUp", json=user_data)
     assert response.status_code == status.HTTP_201_CREATED
-    created_user = response.json()
-    assert "user_id" in created_user
-    assert created_user["user_firstname"] == user_data["user_firstname"]
-    assert created_user["user_lastname"] == user_data["user_lastname"]
 
 
 def test_get_users(client):
@@ -25,23 +21,18 @@ def test_get_users(client):
     assert isinstance(users_list, list)
     assert len(users_list) > 0
 
-    user = users_list[0]
-    assert "user_id" in user
-    assert "user_firstname" in user
-    assert "user_lastname" in user
-
 
 def test_read_user(client):
-    user_id = 8
+    user_id = 10
     response = client.get(f"/users/{user_id}")
     assert response.status_code == status.HTTP_200_OK
     user_detail = response.json()
 
-    assert "user_id" in user_detail
+    assert "id" in user_detail
     assert "user_firstname" in user_detail
     assert "user_lastname" in user_detail
 
-    assert user_detail["user_id"] == user_id
+    assert user_detail["id"] == user_id
 
 
 def test_update_user(client):

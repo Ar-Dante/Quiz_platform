@@ -1,0 +1,81 @@
+from abc import ABC, abstractmethod
+
+from sqlalchemy import insert, select, update, delete
+
+from app.db.db import async_session
+
+
+class AbstractRepository(ABC):
+    @abstractmethod
+    async def add_one(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def find_all(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def find_by_id(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def update_by_id(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_by_id(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def find_by_email(self):
+        raise NotImplementedError
+
+
+class SQLAlchemyRepository(AbstractRepository):
+    model = None
+
+    async def add_one(self, data: dict) -> int:
+        async with async_session() as session:
+            stmt = insert(self.model).values(**data).returning(self.model.id)
+            res = await session.execute(stmt)
+            await session.commit()
+            return res.scalar_one()
+
+    async def find_all(self, limit: int, offset: int):
+        async with async_session() as session:
+            stmt = select(self.model)
+            stmt = stmt.limit(limit).offset(offset)
+            res = await session.execute(stmt)
+            res = [row._asdict() for row in res.all()]
+            return res
+
+    async def find_by_id(self, record_id: int):
+        async with async_session() as session:
+            stmt = select(self.model).filter(self.model.id == record_id)
+            res = await session.execute(stmt)
+            return res.scalar_one_or_none()
+
+    async def update_by_id(self, record_id: int, data: dict):
+        async with async_session() as session:
+            stmt = (
+                update(self.model)
+                .where(self.model.id == record_id)
+                .values(**data)
+                .returning(*self.model.__table__.columns)
+            )
+            result = await session.execute(stmt)
+            await session.commit()
+            updated_record = result.fetchone()
+            return dict(updated_record._asdict())
+
+    async def delete_by_id(self, record_id: int):
+        async with async_session() as session:
+            stmt = delete(self.model).where(self.model.id == record_id)
+            await session.execute(stmt)
+            await session.commit()
+
+    async def find_by_email(self, email: str):
+        async with async_session() as session:
+            stmt = select(self.model).filter(self.model.user_email == email)
+            res = await session.execute(stmt)
+            return res.scalar_one_or_none()
