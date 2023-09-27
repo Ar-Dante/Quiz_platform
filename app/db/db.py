@@ -16,5 +16,5 @@ async def get_redis():
 
 
 async def get_db():
-    async with AsyncSession(engine) as db:
+    async with async_session() as db:
         yield db
