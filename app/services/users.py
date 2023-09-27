@@ -26,7 +26,8 @@ class UsersService:
         return users
 
     async def get_user_by_id(self, user_id: int):
-        user = await self.users_repo.find_by_id(user_id)
+        filter_by = {"id": user_id}
+        user = await self.users_repo.find_by_filter(filter_by)
         return user
 
     async def update_user(self, user_id: int, user_data: UserUpdate):
@@ -38,7 +39,8 @@ class UsersService:
         res = await self.users_repo.delete_by_id(user_id)
 
     async def find_user_by_email(self, email: str):
-        user = await self.users_repo.find_by_email(email)
+        filter_by = {"user_email": email}
+        user = await self.users_repo.find_by_filter(filter_by)
         return user
 
     def _hash_password(self, password: str):

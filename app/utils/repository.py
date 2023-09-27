@@ -15,7 +15,7 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def find_by_id(self):
+    async def find_by_filter(self):
         raise NotImplementedError
 
     @abstractmethod
@@ -24,10 +24,6 @@ class AbstractRepository(ABC):
 
     @abstractmethod
     async def delete_by_id(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    async def find_by_email(self):
         raise NotImplementedError
 
 
@@ -49,9 +45,9 @@ class SQLAlchemyRepository(AbstractRepository):
             res = [row._asdict() for row in res.all()]
             return res
 
-    async def find_by_id(self, record_id: int):
+    async def find_by_filter(self, filter_by):
         async with async_session() as session:
-            stmt = select(self.model).filter(self.model.id == record_id)
+            stmt = select(self.model).filter_by(**filter_by)
             res = await session.execute(stmt)
             return res.scalar_one_or_none()
 
@@ -73,9 +69,3 @@ class SQLAlchemyRepository(AbstractRepository):
             stmt = delete(self.model).where(self.model.id == record_id)
             await session.execute(stmt)
             await session.commit()
-
-    async def find_by_email(self, email: str):
-        async with async_session() as session:
-            stmt = select(self.model).filter(self.model.user_email == email)
-            res = await session.execute(stmt)
-            return res.scalar_one_or_none()
