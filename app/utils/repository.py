@@ -19,7 +19,7 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update_by_id(self):
+    async def update_by_filter(self):
         raise NotImplementedError
 
     @abstractmethod
@@ -51,18 +51,11 @@ class SQLAlchemyRepository(AbstractRepository):
             res = await session.execute(stmt)
             return res.scalar_one_or_none()
 
-    async def update_by_id(self, record_id: int, data: dict):
+    async def update_by_filter(self, filter_by, data: dict):
         async with async_session() as session:
-            stmt = (
-                update(self.model)
-                .where(self.model.id == record_id)
-                .values(**data)
-                .returning(*self.model.__table__.columns)
-            )
-            result = await session.execute(stmt)
+            stmt = update(self.model).filter_by(**filter_by).values(**data)
+            await session.execute(stmt)
             await session.commit()
-            updated_record = result.fetchone()
-            return dict(updated_record._asdict())
 
     async def delete_by_id(self, record_id: int):
         async with async_session() as session:
