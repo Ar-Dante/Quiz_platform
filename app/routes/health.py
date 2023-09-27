@@ -25,10 +25,8 @@ async def check_db_connection(db: AsyncSession = Depends(get_db)):
             raise HTTPException(
                 status_code=500, detail="Database is not configured correctly"
             )
-        logging.info("Connection to PostgreSQL was successful")
         return {"status_code": 200, "detail": "ok", "result": "working"}
     except Exception as e:
-        print(e)
         logging.error("Some problems with connection to PostgreSQL")
         raise HTTPException(status_code=500, detail="Error connecting to the database")
 
@@ -36,8 +34,7 @@ async def check_db_connection(db: AsyncSession = Depends(get_db)):
 @route.get("/check_redis")
 async def check_redis_connection(redis: aioredis.Redis = Depends(get_redis)):
     try:
-        result = await redis.ping()
-        logging.info("Connection to Redis was successful")
+        await redis.ping()
         return {"status_code": 200, "detail": "ok", "result": "working"}
 
     except Exception as e:
