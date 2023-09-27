@@ -77,4 +77,10 @@ This will execute all the tests in your project.
 
 <code>docker run --rm test_image</code>
 
+ <h3>Create Migrations</h3>
+ 
+<code>alembic revision --autogenerate -m "your_migration_message"</code>
 
+ <h3>Apply Migrations</h3>
+ 
+<code>alembic upgrade head</code>
