@@ -12,7 +12,6 @@ class UserBase(BaseModel):
     user_phone: Optional[str] = None
     user_links: Optional[str] = None
     user_avatar: Optional[str] = None
-    is_superuser: Optional[bool] = False
 
 
 class UserCreate(BaseModel):
@@ -21,10 +20,12 @@ class UserCreate(BaseModel):
 
 class UserUpdate(BaseModel):
     user_email: str
-    user_firstname: str
-    user_lastname: str
-    user_city: str
-    user_phone: str
+    user_firstname: Optional[str] = None
+    user_lastname: Optional[str] = None
+    user_city: Optional[str] = None
+    user_phone: Optional[str] = None
+    user_links: Optional[str] = None
+    user_avatar: Optional[str] = None
 
 
 class UserDetail(BaseModel):
@@ -46,8 +47,4 @@ class SignUpRequestModel(BaseModel):
 
 
 class UsersListResponse(BaseModel):
-    users: list[UserDetail]
-
-
-class UserDetailResponse(BaseModel):
-    user: UserDetail
+    users: list[UserBase]
