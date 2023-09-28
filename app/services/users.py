@@ -1,5 +1,12 @@
+import random
+import string
+
+from passlib.context import CryptContext
+
 from app.schemas.user_schemas import SignUpRequestModel, UserUpdate
 from app.utils.repository import AbstractRepository
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UsersService:
@@ -29,7 +36,12 @@ class UsersService:
         filter_by = {"user_email": email}
         return await self.users_repo.find_by_filter(filter_by)
 
-    async def update_user_token(self, email: str, token: str | None):
-        filter_by = {"user_email": email}
-        data = {"refresh_token": token}
-        return await self.users_repo.update_by_filter(filter_by, data)
+    async def create_user_from_auth0(self, email: str):
+        random_chars = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        random_password = f"fake_password{random_chars}"
+        hash_pass = pwd_context.hash(random_password)
+        user_data = {
+            "user_email": email,
+            "hashed_password": hash_pass
+        }
+        return await self.users_repo.add_one(user_data)

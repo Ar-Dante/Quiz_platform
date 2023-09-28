@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.conf.config import conf
-from app.conf.messages import ERROR_INVALID_TOKEN, ERROR_CANT_VALIDATE_CRED
+from app.conf.messages import ERROR_CANT_VALIDATE_CRED
 from app.repository.dependencies import users_service
 from app.services.users import UsersService
 
@@ -34,26 +34,6 @@ class Auth:
         encoded_access_token = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
         return encoded_access_token
 
-    async def create_refresh_token(self, data: dict, expires_delta: Optional[float] = None):
-        to_encode = data.copy()
-        if expires_delta:
-            expire = datetime.utcnow() + timedelta(seconds=expires_delta)
-        else:
-            expire = datetime.utcnow() + timedelta(days=7)
-        to_encode.update({"iat": datetime.utcnow(), "exp": expire, "scope": "refresh_token"})
-        encoded_refresh_token = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
-        return encoded_refresh_token
-
-    async def decode_refresh_token(self, refresh_token: str):
-        try:
-            payload = jwt.decode(refresh_token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
-            if payload['scope'] == 'refresh_token':
-                email = payload['sub']
-                return email
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=ERROR_INVALID_TOKEN)
-        except JWTError:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=ERROR_CANT_VALIDATE_CRED)
-
     async def get_current_user(self, token: str = Depends(oauth2_scheme),
                                users_service: UsersService = Depends(users_service)):
         credentials_exception = HTTPException(
@@ -63,12 +43,16 @@ class Auth:
         )
 
         try:
-            payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
-            if payload['scope'] == 'access_token':
-                email = payload["sub"]
-                if email is None:
+            payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM], audience=conf.auth_audience)
+            scope = payload['scope']
+            match scope:
+                case 'access_token':
+                    email = payload["sub"]
+                case "openid profile email":
+                    email = payload.get("https://example.com/email")
+                case _:
                     raise credentials_exception
-            else:
+            if email is None:
                 raise credentials_exception
         except JWTError as e:
             raise credentials_exception

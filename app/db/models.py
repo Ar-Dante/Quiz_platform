@@ -20,7 +20,6 @@ class User(Base):
     user_avatar = Column(String)
     hashed_password = Column(String, nullable=False)
     is_superuser = Column(Boolean, default=False)
-    refresh_token = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
