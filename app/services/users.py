@@ -1,5 +1,7 @@
+from fastapi import HTTPException
 from passlib.context import CryptContext
 
+from app.conf.messages import ERROR_USER_NOT_FOUND
 from app.schemas.user_schemas import SignUpRequestModel, UserUpdate
 from app.utils.repository import AbstractRepository
 
@@ -20,7 +22,10 @@ class UsersService:
 
     async def get_user_by_id(self, user_id: int):
         filter_by = {"id": user_id}
-        return await self.users_repo.find_by_filter(filter_by)
+        user = await self.users_repo.find_by_filter(filter_by)
+        if user is None:
+            raise HTTPException(status_code=404, detail=ERROR_USER_NOT_FOUND)
+        return user
 
     async def update_user(self, user_id: int, user_data: UserUpdate):
         user_dict = user_data.model_dump()

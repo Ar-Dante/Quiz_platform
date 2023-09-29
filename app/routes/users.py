@@ -37,8 +37,6 @@ async def get_users(
 @route.get("/{user_id}", response_model=UserBase)
 async def read_user(user_id: int, users_service: UsersService = Depends(users_service)):
     user = await users_service.get_user_by_id(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail=ERROR_USER_NOT_FOUND)
     return user
 
 
@@ -48,9 +46,7 @@ async def update_user(
         user_update: UserUpdate,
         users_service: UsersService = Depends(users_service),
 ):
-    user = await users_service.get_user_by_id(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail=ERROR_USER_NOT_FOUND)
+    await users_service.get_user_by_id(user_id)
     await users_service.update_user(user_id, user_update)
     logging.info(f"User {user_id} was changed")
     return await users_service.get_user_by_id(user_id)
@@ -60,9 +56,7 @@ async def update_user(
 async def delete_user(
         user_id: int, users_service: UsersService = Depends(users_service)
 ):
-    user = await users_service.get_user_by_id(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail=ERROR_USER_NOT_FOUND)
+    await users_service.get_user_by_id(user_id)
     await users_service.delete_user(user_id)
     logging.info(f"User {user_id} was deleted")
     return f"User {user_id} was deleted"
