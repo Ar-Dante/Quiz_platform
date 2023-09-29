@@ -17,9 +17,7 @@ async def create_user(
         body: SignUpRequestModel,
         users_service: UsersService = Depends(users_service),
 ):
-    user_email = await users_service.find_user_by_email(body.user_email)
-    if user_email is not None:
-        raise HTTPException(status_code=422, detail=ERROR_EMAIL_EXISTS)
+
     user = await users_service.add_user(body)
     logging.info(f"User {user} was created")
     return f"User id:{user}"
@@ -46,7 +44,6 @@ async def update_user(
         user_update: UserUpdate,
         users_service: UsersService = Depends(users_service),
 ):
-    await users_service.get_user_by_id(user_id)
     await users_service.update_user(user_id, user_update)
     logging.info(f"User {user_id} was changed")
     return await users_service.get_user_by_id(user_id)
@@ -56,7 +53,6 @@ async def update_user(
 async def delete_user(
         user_id: int, users_service: UsersService = Depends(users_service)
 ):
-    await users_service.get_user_by_id(user_id)
     await users_service.delete_user(user_id)
     logging.info(f"User {user_id} was deleted")
     return f"User {user_id} was deleted"
