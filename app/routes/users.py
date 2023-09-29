@@ -34,8 +34,7 @@ async def get_users(
 
 @route.get("/{user_id}", response_model=UserBase)
 async def read_user(user_id: int, users_service: UsersService = Depends(users_service)):
-    user = await users_service.get_user_by_id(user_id)
-    return user
+    return await users_service.get_user_by_id(user_id)
 
 
 @route.put("/{user_id}", response_model=UserUpdate)
