@@ -43,16 +43,12 @@ class Auth:
         )
 
         try:
-            payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM], audience=conf.auth_audience)
-            scope = payload['scope']
-            match scope:
-                case 'access_token':
-                    email = payload["sub"]
-                case "openid profile email":
-                    email = payload.get("https://example.com/email")
-                case _:
+            payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
+            if payload['scope'] == 'access_token':
+                email = payload["sub"]
+                if email is None:
                     raise credentials_exception
-            if email is None:
+            else:
                 raise credentials_exception
         except JWTError as e:
             raise credentials_exception

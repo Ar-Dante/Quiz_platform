@@ -1,26 +1,27 @@
 import logging
+from typing import List
 
 from fastapi import APIRouter, Depends, Query, HTTPException
 from starlette import status
 
 from app.conf.messages import ERROR_USER_NOT_FOUND
 from app.repository.dependencies import users_service
-from app.schemas.user_schemas import UserUpdate
+from app.schemas.user_schemas import UserUpdate, UserBase
 from app.services.users import UsersService
 
 route = APIRouter(prefix="/users", tags=["Users"])
 
 
-@route.get("/")
+@route.get("/", response_model=List[UserBase])
 async def get_users(
         limit: int = Query(10, le=300),
         offset: int = 0,
         users_service: UsersService = Depends(users_service),
 ):
-    return  await users_service.get_users(limit, offset)
+    return await users_service.get_users(limit, offset)
 
 
-@route.get("/{user_id}")
+@route.get("/{user_id}", response_model=UserBase)
 async def read_user(user_id: int, users_service: UsersService = Depends(users_service)):
     user = await users_service.get_user_by_id(user_id)
     if user is None:
@@ -28,7 +29,7 @@ async def read_user(user_id: int, users_service: UsersService = Depends(users_se
     return user
 
 
-@route.put("/{user_id}")
+@route.put("/{user_id}", response_model=UserUpdate)
 async def update_user(
         user_id: int,
         user_update: UserUpdate,

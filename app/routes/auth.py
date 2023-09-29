@@ -48,7 +48,6 @@ async def auth0_login(token: str, users_service: UsersService = Depends(users_se
         payload = jwt.decode(token, conf.secret_auth_key, algorithms=[conf.auth_hash_algorithm],
                              audience=conf.auth_audience)
         email = payload.get("https://example.com/email")
-        print(email)
         if not email:
             raise HTTPException(status_code=400, detail=ERROR_INVALID_TOKEN)
         user = await users_service.find_user_by_email(email)
@@ -57,5 +56,4 @@ async def auth0_login(token: str, users_service: UsersService = Depends(users_se
         access_token = await auth_service.create_access_token(data={"sub": email})
         return {"access_token": access_token, "token_type": "bearer"}
     except JWTError as e:
-        print(e)
-        raise HTTPException(status_code=401, detail="ERROR_INVALID_TOKEN")
+        raise HTTPException(status_code=401, detail=ERROR_INVALID_TOKEN)
