@@ -1,4 +1,4 @@
-from starlette import status
+from fastapi import status
 
 
 def test_create_user(client):

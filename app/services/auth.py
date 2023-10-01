@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.conf.config import conf
-from app.conf.messages import ERROR_CANT_VALIDATE_CRED
+from app.conf.messages import ERROR_CANT_VALIDATE_CRED, ERROR_INVALID_TOKEN
 from app.repository.dependencies import users_service
 from app.services.users import UsersService
 
@@ -33,6 +33,19 @@ class Auth:
         to_encode.update({"iat": datetime.utcnow(), "exp": expire, "scope": "access_token"})
         encoded_access_token = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
         return encoded_access_token
+
+    async def decode_auth0_token(self, token: str):
+        try:
+            payload = jwt.decode(
+                token, conf.secret_auth_key, algorithms=[conf.auth_hash_algorithm],
+                audience=conf.auth_audience
+            )
+            email = payload.get("https://example.com/email")
+            if not email:
+                raise HTTPException(status_code=400, detail=ERROR_INVALID_TOKEN)
+            return email
+        except JWTError as e:
+            raise HTTPException(status_code=401, detail=ERROR_INVALID_TOKEN)
 
     async def get_current_user(self, token: str = Depends(oauth2_scheme),
                                users_service: UsersService = Depends(users_service)):
