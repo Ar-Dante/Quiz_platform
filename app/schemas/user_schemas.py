@@ -1,36 +1,50 @@
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
     user_email: str
-    user_firstname: Optional[str]
-    user_lastname: Optional[str]
-    user_status: str
-    user_city: Optional[str]
-    user_phone: Optional[str]
-    user_links: Optional[str]
-    user_avatar: Optional[str]
+    user_firstname: Optional[str] = None
+    user_lastname: Optional[str] = None
+    user_status: Optional[str] = "active"
+    user_city: Optional[str] = None
+    user_phone: Optional[str] = None
+    user_links: Optional[str] = None
+    user_avatar: Optional[str] = None
 
 
-class UserCreate(UserBase):
-    hashed_password: str
-    is_superuser: bool
+class UserCreate(BaseModel):
+    password: str
 
 
-class UserUpdate(UserBase):
-    pass
+class UserUpdate(BaseModel):
+    user_email: str
+    user_firstname: Optional[str] = None
+    user_lastname: Optional[str] = None
+    user_city: Optional[str] = None
+    user_phone: Optional[str] = None
+    user_links: Optional[str] = None
+    user_avatar: Optional[str] = None
 
 
-class UserDetail(UserBase):
-    pass
+class UserDetail(BaseModel):
+    user_id: int
+    user_firstname: str
+    user_lastname: str
 
 
-class UserSignInRequest(BaseModel):
+class SignInRequest(BaseModel):
     user_email: str
     password: str
 
 
-class UserListResponse(BaseModel):
-    users: List[UserBase]
+class SignUpRequestModel(BaseModel):
+    user_email: str
+    user_firstname: str
+    user_lastname: str
+    hashed_password: str
+
+
+class UsersListResponse(BaseModel):
+    users: list[UserBase]

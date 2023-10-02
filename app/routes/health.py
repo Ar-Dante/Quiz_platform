@@ -34,8 +34,8 @@ async def check_db_connection(db: AsyncSession = Depends(get_db)):
 async def check_redis_connection(redis: aioredis.Redis = Depends(get_redis)):
     try:
         await redis.ping()
+        logging.info("Connection to Redis was successful")
         return {"status_code": 200, "detail": "ok", "result": "working"}
 
     except Exception as e:
-        logging.error("Some problems with connection to Redis")
         raise HTTPException(status_code=500, detail="Error connecting to the database")
