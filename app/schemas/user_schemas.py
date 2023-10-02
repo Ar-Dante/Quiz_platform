@@ -1,17 +1,14 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class UserBase(BaseModel):
     user_email: str
     user_firstname: Optional[str] = None
     user_lastname: Optional[str] = None
-    user_status: Optional[str] = "active"
     user_city: Optional[str] = None
     user_phone: Optional[str] = None
-    user_links: Optional[str] = None
-    user_avatar: Optional[str] = None
 
 
 class UserCreate(BaseModel):
@@ -19,13 +16,10 @@ class UserCreate(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    user_email: str
-    user_firstname: Optional[str] = None
-    user_lastname: Optional[str] = None
-    user_city: Optional[str] = None
-    user_phone: Optional[str] = None
-    user_links: Optional[str] = None
-    user_avatar: Optional[str] = None
+    user_firstname: str
+    user_lastname: str
+    user_city: str
+    user_phone: str
 
 
 class UserDetail(BaseModel):
@@ -35,16 +29,20 @@ class UserDetail(BaseModel):
 
 
 class SignInRequest(BaseModel):
-    user_email: str
-    password: str
+    user_email: EmailStr
+    hashed_password: str
 
 
 class SignUpRequestModel(BaseModel):
-    user_email: str
+    user_email: EmailStr
     user_firstname: str
     user_lastname: str
     hashed_password: str
 
 
 class UsersListResponse(BaseModel):
-    users: list[UserBase]
+    users: list[UserDetail]
+
+
+class UserDetailResponse(BaseModel):
+    user: UserDetail

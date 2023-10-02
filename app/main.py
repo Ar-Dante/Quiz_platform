@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.conf.config import conf
-from app.routes import health, users
+from app.routes import health, users, auth
 
 app = FastAPI()
 
@@ -16,6 +16,7 @@ app.add_middleware(
 )
 
 app.include_router(health.route)
+app.include_router(auth.route)
 app.include_router(users.route)
 
 if __name__ == "__main__":

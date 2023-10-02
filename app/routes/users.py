@@ -4,20 +4,18 @@ from typing import List
 from fastapi import APIRouter, Depends, Query, HTTPException
 from starlette import status
 
-from app.conf.messages import ERROR_USER_NOT_FOUND, ERROR_EMAIL_EXISTS
+from app.conf.messages import ERROR_ACCOUNT_EXISTS
 from app.repository.dependencies import users_service
-from app.schemas.user_schemas import SignUpRequestModel, UserUpdate, UserBase
+from app.schemas.user_schemas import UserUpdate, UserBase, SignUpRequestModel
+from app.services.auth import auth_service
 from app.services.users import UsersService
 
 route = APIRouter(prefix="/users", tags=["Users"])
 
 
 @route.post("/SingUp", status_code=status.HTTP_201_CREATED)
-async def create_user(
-        body: SignUpRequestModel,
-        users_service: UsersService = Depends(users_service),
-):
-
+async def SingUp(body: SignUpRequestModel, users_service: UsersService = Depends(users_service)):
+    body.hashed_password = auth_service.get_password_hash(body.hashed_password)
     user = await users_service.add_user(body)
     logging.info(f"User {user} was created")
     return f"User id:{user}"
