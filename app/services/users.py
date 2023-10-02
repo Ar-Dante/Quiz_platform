@@ -3,8 +3,9 @@ import string
 
 from fastapi import HTTPException
 from passlib.context import CryptContext
+from starlette import status
 
-from app.conf.messages import ERROR_USER_NOT_FOUND
+from app.conf.messages import ERROR_USER_NOT_FOUND, ERROR_ACCOUNT_EXISTS
 from app.schemas.user_schemas import SignUpRequestModel, UserUpdate
 from app.utils.repository import AbstractRepository
 
@@ -16,6 +17,9 @@ class UsersService:
         self.users_repo: AbstractRepository = users_repo()
 
     async def add_user(self, user: SignUpRequestModel):
+        user_email = await self.find_user_by_email(user.user_email)
+        if user_email is not None:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=ERROR_ACCOUNT_EXISTS)
         user_dict = user.model_dump()
         return await self.users_repo.add_one(user_dict)
 

@@ -2,12 +2,12 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from fastapi import HTTPException, status, Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.conf.config import conf
-from app.conf.messages import ERROR_CANT_VALIDATE_CRED, ERROR_INVALID_TOKEN
+from app.conf.messages import ERROR_CANT_VALIDATE_CRED, ERROR_INVALID_TOKEN, ERROR_INVALID_CRED
 from app.repository.dependencies import users_service
 from app.services.users import UsersService
 
@@ -34,7 +34,7 @@ class Auth:
         encoded_access_token = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
         return encoded_access_token
 
-    async def decode_auth0_token(self, token: str):
+    async def decode_auth0_token(self, token: str, users_service: UsersService = Depends(users_service)):
         try:
             payload = jwt.decode(
                 token, conf.secret_auth_key, algorithms=[conf.auth_hash_algorithm],
@@ -43,6 +43,9 @@ class Auth:
             email = payload.get("https://example.com/email")
             if not email:
                 raise HTTPException(status_code=400, detail=ERROR_INVALID_TOKEN)
+            user = await users_service.find_user_by_email(email)
+            if user is None:
+                await users_service.create_user_from_auth0(email)
             return email
         except JWTError as e:
             raise HTTPException(status_code=401, detail=ERROR_INVALID_TOKEN)
@@ -70,6 +73,16 @@ class Auth:
         if user is None:
             raise credentials_exception
         return user
+
+    async def SingIn(self, body: OAuth2PasswordRequestForm = Depends(),
+                     users_service: UsersService = Depends(users_service)):
+        user = await users_service.find_user_by_email(body.username)
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=ERROR_INVALID_CRED)
+        if not self.verify_password(body.password, user.hashed_password):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=ERROR_INVALID_CRED)
+        access_token = await self.create_access_token(data={"sub": user.user_email})
+        return {"access_token": access_token, "token_type": "bearer"}
 
 
 auth_service = Auth()

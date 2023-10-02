@@ -15,9 +15,6 @@ route = APIRouter(prefix="/users", tags=["Users"])
 
 @route.post("/SingUp", status_code=status.HTTP_201_CREATED)
 async def SingUp(body: SignUpRequestModel, users_service: UsersService = Depends(users_service)):
-    user_email = await users_service.find_user_by_email(body.user_email)
-    if user_email is not None:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=ERROR_ACCOUNT_EXISTS)
     body.hashed_password = auth_service.get_password_hash(body.hashed_password)
     user = await users_service.add_user(body)
     logging.info(f"User {user} was created")
