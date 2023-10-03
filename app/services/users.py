@@ -57,7 +57,7 @@ class UsersService:
         return await self.users_repo.find_by_filter(filter_by)
 
     async def create_user_from_auth0(self, email: str):
-        random_chars = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        random_chars = ''.join(random.choices(string.ascii_letters.upper() + string.digits, k=10))
         random_password = f"fake_password{random_chars}"
         hash_pass = pwd_context.hash(random_password)
         user_data = {
