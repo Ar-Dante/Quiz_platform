@@ -6,7 +6,7 @@ from starlette import status
 
 from app.conf.messages import ERROR_ACCESS
 from app.repository.dependencies import users_service
-from app.schemas.user_schemas import UserUpdate, UserBase, SignUpRequestModel, UserDetail
+from app.schemas.user_schemas import UserUpdate, SignUpRequestModel, UserDetail
 from app.services.auth import auth_service
 from app.services.users import UsersService
 
@@ -42,21 +42,17 @@ async def update_user(
         users_service: UsersService = Depends(users_service),
         current_user: dict = Depends(auth_service.get_current_user)
 ):
-    if current_user.id != user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
     user_update.hashed_password = auth_service.get_password_hash(user_update.hashed_password)
-    await users_service.update_user(user_id, user_update)
+    await users_service.update_user(user_id, user_update, current_user)
     logging.info(f"User {user_id} was changed")
     return await users_service.get_user_by_id(user_id)
 
 
 @route.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
-        user_id: int, users_service: UsersService = Depends(users_service),
+        user_id: int,
+        users_service: UsersService = Depends(users_service),
         current_user: dict = Depends(auth_service.get_current_user)
 ):
-    if current_user.id != user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
-    await users_service.delete_user(user_id)
+    await users_service.delete_user(user_id, current_user.id)
     logging.info(f"User {user_id} was deleted")
-    return f"User {user_id} was deleted"
