@@ -10,7 +10,7 @@ class UserBase(BaseModel):
     def validate_password(cls, value):
         min_length = 8
         if len(value) < min_length:
-            raise ValueError('Password must be at least 8 characters long. ')
+            raise ValueError('Password must be at least 8 characters long.')
         if not any(character.isupper() for character in value):
             raise ValueError('Password should contain at least one uppercase character.')
         return value

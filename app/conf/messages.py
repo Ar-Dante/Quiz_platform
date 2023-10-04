@@ -8,3 +8,5 @@ ERROR_INVALID_CRED = "Invalid cred"
 ERROR_INVALID_TOKEN = 'Invalid scope for token'
 ERROR_CANT_VALIDATE_CRED = 'Could not validate credentials'
 ERROR_ACCESS = "Access denied"
+
+ERROR_COMPANY_NOT_FOUND = "Company not found"

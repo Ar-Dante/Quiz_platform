@@ -39,7 +39,7 @@ class UsersService:
         user = await self.users_repo.find_by_filter(filter_by)
         if user is None:
             raise HTTPException(status_code=404, detail=ERROR_USER_NOT_FOUND)
-        if current_user != user_id:
+        if current_user.id != user_id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
         return await self.users_repo.update_by_filter(filter_by, user_dict)
 
@@ -48,7 +48,7 @@ class UsersService:
         user = await self.users_repo.find_by_filter(filter_by)
         if user is None:
             raise HTTPException(status_code=404, detail=ERROR_USER_NOT_FOUND)
-        if current_user != user_id:
+        if current_user.id != user_id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
         await self.users_repo.delete_by_id(user_id)
 
