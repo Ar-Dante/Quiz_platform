@@ -41,3 +41,19 @@ class Company(Base):
     is_visible = Column(Boolean, default=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     owner = relationship("User", back_populates="companies")
+
+
+class UsersCompaniesActions(Base):
+    __tablename__ = "actions"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=True)
+    action = Column(String)
+
+
+class CompanyMembers(Base):
+    __tablename__ = "members"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=True)
+    is_admin = Column(Boolean, default=False)

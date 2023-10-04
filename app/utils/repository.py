@@ -27,6 +27,10 @@ class AbstractRepository(ABC):
     async def delete_by_id(self, record_id: int) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    async def delete_by_filter(self, filter_by: dict) -> None:
+        raise NotImplementedError
+
 
 class SQLAlchemyRepository(AbstractRepository):
     model = None
@@ -60,5 +64,11 @@ class SQLAlchemyRepository(AbstractRepository):
     async def delete_by_id(self, record_id: int) -> None:
         async with async_session() as session:
             statement = delete(self.model).where(self.model.id == record_id)
+            await session.execute(statement)
+            await session.commit()
+
+    async def delete_by_filter(self, filter_by: dict) -> None:
+        async with async_session() as session:
+            statement = delete(self.model).filter_by(**filter_by)
             await session.execute(statement)
             await session.commit()

@@ -10,7 +10,7 @@ class CompanyService:
     def __init__(self, companies_repo: AbstractRepository):
         self.companies_repo: AbstractRepository = companies_repo()
 
-    async def create_company(self, company: CompanyCreate, owner_id):
+    async def create_company(self, company: CompanyCreate, owner_id: int):
         company_dict = company.model_dump()
         company_dict["owner_id"] = owner_id
         return await self.companies_repo.add_one(company_dict)
