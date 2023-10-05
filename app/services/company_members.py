@@ -1,7 +1,8 @@
 from fastapi import HTTPException
 from fastapi import status
 
-from app.conf.messages import ERROR_MEMBER_NOT_FOUND, ERROR_ACCESS
+from app.conf.messages import ERROR_MEMBER_NOT_FOUND, ERROR_ACCESS, ERROR_MEMBER_ADMIN, ERROR_MEMBER_OWNER_ADMIN, \
+    ERROR_MEMBER_NOT_ADMIN
 from app.utils.repository import AbstractRepository
 
 
@@ -62,3 +63,50 @@ class CompanyMembersService:
         members = await self.comp_memb_repo.find_all(limit, offset)
         return [mem for mem in members if
                 company.id == mem.company_id]
+
+    async def add_admin(self,
+                        user_id: int,
+                        company: dict,
+                        current_user: int
+                        ):
+        if current_user != company.owner_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
+        if user_id == current_user:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_OWNER_ADMIN)
+        member = await self.get_member(user_id, company.id)
+        if member is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MEMBER_NOT_FOUND)
+        if member.is_admin:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_ADMIN)
+        filter_by = {
+            "user_id": user_id,
+            "company_id": company.id
+        }
+        data = {"is_admin": True}
+        return await self.comp_memb_repo.update_by_filter(filter_by, data)
+
+    async def remove_admin(self,
+                           user_id: int,
+                           company: dict,
+                           current_user: int
+                           ):
+        if current_user != company.owner_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
+        if user_id == current_user:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_OWNER_ADMIN)
+        member = await self.get_member(user_id, company.id)
+        if member is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MEMBER_NOT_FOUND)
+        if not member.is_admin:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_NOT_ADMIN)
+        filter_by = {
+            "user_id": user_id,
+            "company_id": company.id
+        }
+        data = {"is_admin": False}
+        return await self.comp_memb_repo.update_by_filter(filter_by, data)
+
+    async def get_company_admins(self, company: dict, limit: int, offset: int):
+        members = await self.comp_memb_repo.find_all(limit, offset)
+        return [mem for mem in members if
+                company.id == mem.company_id and mem.is_admin]

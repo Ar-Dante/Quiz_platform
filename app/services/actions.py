@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from fastapi import status
 
 from app.conf.messages import ERROR_ACCESS, ERROR_USER_NOT_INVITED, ERROR_USER_INVITED, ERROR_USER_REQUEST, \
-    ERROR_USER_NOT_REQUESTED, ERROR_MEMBER_EXISTS
+    ERROR_USER_NOT_REQUESTED, ERROR_MEMBER_EXISTS, ERROR_MEMBER_OWNER
 from app.utils.repository import AbstractRepository
 
 
@@ -14,14 +14,16 @@ class ActionService:
                               user_id: int,
                               company_id: int,
                               current_user: int,
-                              company_owner: int,
+                              company: dict,
                               member: dict) -> int:
-        if current_user != company_owner:
+        if current_user != company.owner_id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
+        if user_id == current_user:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_OWNER)
         invitation = await self.get_actions(user_id, company_id, "invitation_sent")
         if invitation:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_USER_INVITED)
-        if member or user_id == current_user:
+        if member:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_EXISTS)
         data = {
             "user_id": user_id,
@@ -32,20 +34,22 @@ class ActionService:
 
     async def send_request(self,
                            user_id: int,
-                           company_id: int,
+                           company: dict,
                            current_user: int,
                            member: dict
                            ):
         if current_user != user_id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
-        request = await self.get_actions(user_id, company_id, "request_sent")
+        if user_id == company.owner_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_OWNER)
+        request = await self.get_actions(user_id, company.id, "request_sent")
         if request:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_USER_REQUEST)
-        if member or user_id == current_user:
+        if member:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_EXISTS)
         data = {
             "user_id": user_id,
-            "company_id": company_id,
+            "company_id": company.id,
             "action": "request_sent"
         }
         return await self.actions_repo.add_one(data)
