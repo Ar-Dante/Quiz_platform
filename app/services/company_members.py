@@ -39,8 +39,7 @@ class CompanyMembersService:
                                   current_user: int,
                                   ):
         await validate_access(current_user, company.owner_id)
-        member = await self.get_member(user_id, company.id)
-        if member is None:
+        if await self.get_member(user_id, company.id) is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MEMBER_NOT_FOUND)
         return await self.comp_memb_repo.delete_by_filter({
             "user_id": user_id,

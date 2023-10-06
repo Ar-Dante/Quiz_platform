@@ -1,0 +1,8 @@
+{
+  "user_rep_test.py::test_create": true,
+  "user_rep_test.py::test_create_user": true,
+  "user_route_test.py::test_read_user": true,
+  "user_route_test.py::test_get_users": true,
+  "user_route_test.py": true,
+  "user_route_test.py::test_create_user": true
+}
