@@ -72,3 +72,4 @@ class SQLAlchemyRepository(AbstractRepository):
             statement = delete(self.model).filter_by(**filter_by)
             await session.execute(statement)
             await session.commit()
+
