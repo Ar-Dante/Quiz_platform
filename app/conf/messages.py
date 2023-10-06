@@ -18,3 +18,4 @@ ERROR_USER_NOT_REQUESTED = "The user did not send a request"
 
 ERROR_MEMBER_NOT_FOUND = "Member not found"
 ERROR_MEMBER_EXISTS = "User is already in the company"
+ERROR_MEMBER_OWNER = "The owner can't be member"

@@ -117,7 +117,7 @@ async def send_invitation(
     member = await comp_memb_service.get_member(user_id, company_id)
     company = await companies_service.get_company_by_id(company_id, current_user.id)
     user = await users_service.get_user_by_id(user_id)
-    await actions_service.send_invitation(user.id, company_id, current_user.id, company.owner_id, member)
+    await actions_service.send_invitation(user.id, company_id, current_user.id, company, member)
     logging.info(f"User {user_id} was invited")
     return f"User {user_id} was invited"
 
