@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, ARRAY
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -57,3 +57,29 @@ class CompanyMembers(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=True)
     is_admin = Column(Boolean, default=False)
+
+
+class Quiz(Base):
+    __tablename__ = "quizzes"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    quiz_name = Column(String(255), nullable=False)
+    quiz_title = Column(String(255))
+    quiz_description = Column(String)
+    quiz_frequency = Column(Integer, nullable=False)
+    quiz_company_id = Column(Integer, ForeignKey("companies.id"))
+    created_by = Column(Integer, ForeignKey("users.id"))
+    updated_by = Column(Integer, ForeignKey("users.id"))
+    questions = relationship("Question", back_populates="quiz")
+
+
+class Question(Base):
+    __tablename__ = "questions"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    question_text = Column(String, nullable=False)
+    question_answers = Column(ARRAY(String), nullable=False)
+    question_correct_answer = Column(Integer, nullable=False)
+    question_quiz_id = Column(Integer, ForeignKey("quizzes.id"))
+    question_company_id = Column(String, ForeignKey("companies.id"))
+    created_by = Column(Integer, ForeignKey("users.id"))
+    updated_by = Column(Integer, ForeignKey("users.id"))
+    quiz = relationship("Quiz", back_populates="questions")
