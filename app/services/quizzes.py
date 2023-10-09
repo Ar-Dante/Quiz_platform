@@ -19,11 +19,10 @@ class QuizService:
         })
         return await self.quizzes_repo.add_one(quiz_dict)
 
-    async def get_quizzes(self, company_id: dict, limit: int, offset: int):
-        quizzes = await self.quizzes_repo.find_all(limit, offset)
-        return [quiz for quiz in quizzes if quiz.quiz_company_id == company_id]
+    async def get_quizzes(self, company_id: int, limit: int, offset: int):
+        return await self.quizzes_repo.filter_by(limit, offset, {"quiz_company_id": company_id})
 
-    async def get_quiz_by_id(self, quiz_id: int, company_id: int):
+    async def get_quiz_by_id(self, quiz_id: int):
         quiz = await self.quizzes_repo.find_by_filter({"id": quiz_id})
         if quiz is None:
             raise HTTPException(status_code=404, detail=ERROR_QUIZ_NOT_FOUND)

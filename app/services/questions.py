@@ -64,12 +64,8 @@ class QuestionService:
             raise HTTPException(status_code=404, detail=ERROR_QUESTION_NOT_FOUND)
         return question
 
-    async def get_questions(self,
-                            quizz_id: int,
-                            limit: int,
-                            offset: int):
-        questions = await self.questions_repo.find_all(limit, offset)
-        return [question for question in questions if question.question_quiz_id == quizz_id]
+    async def get_questions(self, quizz_id: int, limit: int = 100, offset: int = 0):
+        return await self.questions_repo.filter_by(limit, offset, {"question_quiz_id": quizz_id})
 
     async def valid_question_access(self,
                                     current_user: int,
