@@ -20,11 +20,19 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def filter_by(self, limit: int, offset: int, filter_by: dict) -> Optional[Dict[str, Any]]:
+        raise NotImplementedError
+
+    @abstractmethod
     async def update_by_filter(self, filter_by: dict, data: dict) -> None:
         raise NotImplementedError
 
     @abstractmethod
     async def delete_by_id(self, record_id: int) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_by_filter(self, filter_by: dict) -> None:
         raise NotImplementedError
 
 
@@ -45,6 +53,12 @@ class SQLAlchemyRepository(AbstractRepository):
             res = await session.execute(statement)
             return res.scalars().all()
 
+    async def filter_by(self, limit: int, offset: int, filter_by: dict) -> list:
+        async with async_session() as session:
+            statement = select(self.model).filter_by(**filter_by).limit(limit).offset(offset)
+            res = await session.execute(statement)
+            return res.scalars().all()
+
     async def find_by_filter(self, filter_by: dict) -> Optional[Dict[str, Any]]:
         async with async_session() as session:
             statement = select(self.model).filter_by(**filter_by)
@@ -60,5 +74,11 @@ class SQLAlchemyRepository(AbstractRepository):
     async def delete_by_id(self, record_id: int) -> None:
         async with async_session() as session:
             statement = delete(self.model).where(self.model.id == record_id)
+            await session.execute(statement)
+            await session.commit()
+
+    async def delete_by_filter(self, filter_by: dict) -> None:
+        async with async_session() as session:
+            statement = delete(self.model).filter_by(**filter_by)
             await session.execute(statement)
             await session.commit()
