@@ -3,7 +3,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Query
 
-from app.repository.dependencies import company_service, quizzes_service, comp_memb_service, questions_service
+from app.repository.dependencies import company_service, quizzes_service, comp_memb_service, questions_service, \
+    results_service
 from app.schemas.questions_schemas import QuestionCreateModel, QuestionUpdateModel, QuestionDetail
 from app.schemas.quizzes_schemas import QuizCreateModel, QuizDetail, QuizUpdateModel
 from app.services.auth import auth_service
@@ -11,6 +12,7 @@ from app.services.companies import CompanyService
 from app.services.company_members import CompanyMembersService
 from app.services.questions import QuestionService
 from app.services.quizzes import QuizService
+from app.services.results import ResultsService
 
 route = APIRouter(prefix="/quizzes", tags=["Quizzes"])
 
@@ -48,6 +50,27 @@ async def create_question(company_id: int,
     return f"Question id:{question}"
 
 
+@route.post("/SubmitQuestion")
+async def submit_quizz(company_id: int,
+                       quiz_id: int,
+                       body: list[str],
+                       companies_service: CompanyService = Depends(company_service),
+                       quizzes_service: QuizService = Depends(quizzes_service),
+                       questions_service: QuestionService = Depends(questions_service),
+                       comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
+                       results_srvice: ResultsService = Depends(results_service),
+                       current_user: dict = Depends(auth_service.get_current_user)
+                       ):
+    company = await companies_service.get_company_by_id(company_id, current_user.id)
+    member = await comp_memb_service.get_member(current_user.id, company_id)
+    quiz = await quizzes_service.get_quiz_by_id(quiz_id, company)
+    question = await questions_service.get_questions(quiz.id)
+    results = await quizzes_service.quizz_submit(question, body, member, company, current_user.id)
+    await results_srvice.add_results(quiz_id, current_user.id, results["correct_answers"], results["total_answers"])
+    logging.info(f"Total score for user {current_user.id} is {results}")
+    return f"Total score for user {current_user.id} is {results}"
+
+
 @route.get("/Quizzes", response_model=List[QuizDetail])
 async def get_quizzes(
         company_id: int,
@@ -72,8 +95,8 @@ async def get_questions(
         quizzes_service: QuizService = Depends(quizzes_service),
         current_user: dict = Depends(auth_service.get_current_user)
 ):
-    company = await companies_service.get_company_by_id(company_id, current_user.id)
-    quiz = await quizzes_service.get_quiz_by_id(quiz_id, company.id)
+    await companies_service.get_company_by_id(company_id, current_user.id)
+    quiz = await quizzes_service.get_quiz_by_id(quiz_id)
     return await questions_service.get_questions(quiz.id, limit, offset)
 
 
@@ -127,7 +150,7 @@ async def remove_question(
 ):
     company = await companies_service.get_company_by_id(company_id, current_user.id)
     member = await comp_memb_service.get_member(current_user.id, company_id)
-    quiz =await quizzes_service.get_quiz_by_id(quiz_id, company.id)
+    quiz = await quizzes_service.get_quiz_by_id(quiz_id, company.id)
     logging.info(f"Question {question_id} was removed")
     await questions_service.remove_question(question_id, quiz.id, company, member, current_user.id)
     return f"Question id:{question_id} was removed"

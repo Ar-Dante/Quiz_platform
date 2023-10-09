@@ -63,29 +63,21 @@ class ActionService:
                                                          "action": "request_sent"},
                                                         {"action": "request_canceled"})
 
-    async def get_company_invitations(self, company: dict, limit: int, offset: int, current_user: int):
-        await validate_access(current_user, company.owner_id)
-        invitations = await self.actions_repo.find_all(limit, offset)
-        return [invite for invite in invitations if
-                invite.action == "invitation_sent" and invite.company_id == company.id]
+    async def get_company_invitations(self, company_id: int, limit: int, offset: int, current_user: int):
+        await validate_access(current_user, company_id)
+        return await self.actions_repo.filter_by(limit, offset, {"action": "invitation_sent", "company_id": company_id})
 
-    async def get_company_requests(self, company: dict, limit: int, offset: int, current_user: int):
-        await validate_access(current_user, company.owner_id)
-        invitations = await self.actions_repo.find_all(limit, offset)
-        return [invite for invite in invitations if
-                invite.action == "request_sent" and invite.company_id == company.id]
+    async def get_company_requests(self, company_id: int, limit: int, offset: int, current_user: int):
+        await validate_access(current_user, company_id)
+        return await self.actions_repo.filter_by(limit, offset, {"action": "request_sent", "company_id": company_id})
 
     async def get_user_invitations(self, user_id: int, limit: int, offset: int, current_user: int):
         await validate_access(current_user, user_id)
-        invitations = await self.actions_repo.find_all(limit, offset)
-        return [invite for invite in invitations if
-                invite.action == "invitation_sent" and invite.user_id == user_id]
+        return await self.actions_repo.filter_by(limit, offset, {"action": "invitation_sent", "user_id": user_id})
 
     async def get_user_requests(self, user_id: int, limit: int, offset: int, current_user: int):
         await validate_access(current_user, user_id)
-        invitations = await self.actions_repo.find_all(limit, offset)
-        return [invite for invite in invitations if
-                invite.action == "request_sent" and invite.user_id == user_id]
+        return await self.actions_repo.filter_by(limit, offset,  {"action": "request_sent", "user_id": user_id})
 
     async def get_actions(self, user_id, company_id, action: str):
         return await self.actions_repo.find_by_filter({"user_id": user_id,

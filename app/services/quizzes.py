@@ -1,7 +1,8 @@
 from fastapi import HTTPException
 from fastapi import status
 
-from app.conf.messages import ERROR_ACCESS, ERROR_MEMBER_NOT_EXISTS, ERROR_QUIZ_NOT_FOUND
+from app.conf.messages import ERROR_ACCESS, ERROR_MEMBER_NOT_EXISTS, ERROR_QUIZ_NOT_FOUND, ERROR_NOT_ENOUGH_QUESTIONS, \
+    ERROR_MEMBER_NOT_FOUND
 from app.schemas.quizzes_schemas import QuizCreateModel, QuizUpdateModel
 from app.utils.repository import AbstractRepository
 
@@ -19,11 +20,10 @@ class QuizService:
         })
         return await self.quizzes_repo.add_one(quiz_dict)
 
-    async def get_quizzes(self, company_id: dict, limit: int, offset: int):
-        quizzes = await self.quizzes_repo.find_all(limit, offset)
-        return [quiz for quiz in quizzes if quiz.quiz_company_id == company_id]
+    async def get_quizzes(self, company_id: int, limit: int, offset: int):
+        return await self.quizzes_repo.filter_by(limit, offset, {"quiz_company_id": company_id})
 
-    async def get_quiz_by_id(self, quiz_id: int, company_id: int):
+    async def get_quiz_by_id(self, quiz_id: int):
         quiz = await self.quizzes_repo.find_by_filter({"id": quiz_id})
         if quiz is None:
             raise HTTPException(status_code=404, detail=ERROR_QUIZ_NOT_FOUND)
@@ -48,3 +48,20 @@ class QuizService:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_NOT_EXISTS)
         if company.owner_id != current_user and not member.is_admin:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
+
+    async def quizz_submit(self,
+                           questions: list[dict],
+                           user_answer: list[str],
+                           member: dict,
+                           company: dict,
+                           current_user: int) -> dict:
+        if member is None and company.owner_id != current_user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MEMBER_NOT_FOUND)
+        if len(questions) < 2:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_NOT_ENOUGH_QUESTIONS)
+        correct_answers = 0
+        for i, question in enumerate(questions):
+            if i < len(user_answer):
+                if user_answer[i] == question.question_correct_answer:
+                    correct_answers += 1
+        return {"correct_answers": correct_answers, "total_answers": len(questions)}

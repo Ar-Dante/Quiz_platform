@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from fastapi import status
 
-from app.conf.messages import ERROR_MEMBER_NOT_FOUND, ERROR_ACCESS, ERROR_MEMBER_ADMIN, ERROR_MEMBER_OWNER_ADMIN, \
+from app.conf.messages import ERROR_MEMBER_NOT_FOUND, ERROR_MEMBER_ADMIN, ERROR_MEMBER_OWNER_ADMIN, \
     ERROR_MEMBER_NOT_ADMIN
 from app.repository.validation import validate_access
 from app.utils.repository import AbstractRepository
@@ -52,10 +52,8 @@ class CompanyMembersService:
             "company_id": company_id
         })
 
-    async def get_company_members(self, company: dict, limit: int, offset: int):
-        members = await self.comp_memb_repo.find_all(limit, offset)
-        return [mem for mem in members if
-                company.id == mem.company_id]
+    async def get_company_members(self, company_id: int, limit: int, offset: int):
+        return await self.comp_memb_repo.filter_by(limit, offset, {"company_id": company_id})
 
     async def add_admin(self,
                         user_id: int,
@@ -93,7 +91,5 @@ class CompanyMembersService:
             "company_id": company.id
         }, {"is_admin": False})
 
-    async def get_company_admins(self, company: dict, limit: int, offset: int):
-        members = await self.comp_memb_repo.find_all(limit, offset)
-        return [mem for mem in members if
-                company.id == mem.company_id and mem.is_admin]
+    async def get_company_admins(self, company_id: int, limit: int, offset: int):
+        return await self.comp_memb_repo.filter_by(limit, offset, {"company_id": company_id, "is_admin": True})
