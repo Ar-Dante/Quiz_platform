@@ -38,8 +38,7 @@ class CompanyMembersService:
                                   current_user: int,
                                   ):
         await validate_access(current_user, company.owner_id)
-        member = await self.get_member(user_id, company.id)
-        if member is None:
+        if await self.get_member(user_id, company.id) is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MEMBER_NOT_FOUND)
         return await self.comp_memb_repo.delete_by_filter({
             "user_id": user_id,
@@ -52,7 +51,5 @@ class CompanyMembersService:
             "company_id": company_id
         })
 
-    async def get_company_members(self, company: dict, limit: int, offset: int):
-        members = await self.comp_memb_repo.find_all(limit, offset)
-        return [mem for mem in members if
-                company.id == mem.company_id]
+    async def get_company_members(self, company_id: int, limit: int, offset: int):
+        return await self.comp_memb_repo.filter_by(limit, offset, {"company_id": company_id})
