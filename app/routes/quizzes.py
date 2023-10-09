@@ -7,12 +7,13 @@ from app.repository.dependencies import company_service, quizzes_service, comp_m
     results_service
 from app.schemas.questions_schemas import QuestionCreateModel, QuestionUpdateModel, QuestionDetail
 from app.schemas.quizzes_schemas import QuizCreateModel, QuizDetail, QuizUpdateModel
-from app.services.auth import auth_service
+from app.services.auth import auth_service, users_service
 from app.services.companies import CompanyService
 from app.services.company_members import CompanyMembersService
 from app.services.questions import QuestionService
 from app.services.quizzes import QuizService
 from app.services.results import ResultsService
+from app.services.users import UsersService
 
 route = APIRouter(prefix="/quizzes", tags=["Quizzes"])
 
@@ -44,10 +45,37 @@ async def create_question(company_id: int,
                           ):
     company = await companies_service.get_company_by_id(company_id, current_user.id)
     member = await comp_memb_service.get_member(current_user.id, company_id)
-    quiz = await quizzes_service.get_quiz_by_id(quizz_id, company)
+    quiz = await quizzes_service.get_quiz_by_id(quizz_id)
     question = await questions_service.create_question(quiz, body, member, company, current_user.id)
     logging.info(f"Question:{question} was created")
     return f"Question id:{question}"
+
+
+@route.get("/{user_id}/system-average-rating")
+async def get_system_average_rating(user_id: int,
+                                    users_service: UsersService = Depends(users_service),
+                                    results_srvice: ResultsService = Depends(results_service)):
+    user = await users_service.get_user_by_id(user_id)
+    return {"system_average_rating": await results_srvice.get_system_average_rating(user.id)}
+
+
+@route.get("/{company_id}/{user_id}/average-rating")
+async def company_average_rating(company_id: int,
+                                 user_id: int,
+                                 users_service: UsersService = Depends(users_service),
+                                 results_srvice: ResultsService = Depends(results_service),
+                                 comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
+                                 companies_service: CompanyService = Depends(company_service),
+                                 current_user: dict = Depends(auth_service.get_current_user)):
+    company = await companies_service.get_company_by_id(company_id, current_user.id)
+    member = await comp_memb_service.get_member(current_user.id, company_id)
+    user = await users_service.get_user_by_id(user_id)
+    return {
+        "system_average_rating": await results_srvice.get_company_average_rating(user.id,
+                                                                                 company.id,
+                                                                                 member,
+                                                                                 company,
+                                                                                 current_user.id)}
 
 
 @route.post("/SubmitQuestion")
@@ -63,10 +91,11 @@ async def submit_quizz(company_id: int,
                        ):
     company = await companies_service.get_company_by_id(company_id, current_user.id)
     member = await comp_memb_service.get_member(current_user.id, company_id)
-    quiz = await quizzes_service.get_quiz_by_id(quiz_id, company)
+    quiz = await quizzes_service.get_quiz_by_id(quiz_id)
     question = await questions_service.get_questions(quiz.id)
     results = await quizzes_service.quizz_submit(question, body, member, company, current_user.id)
-    await results_srvice.add_results(quiz_id, current_user.id, results["correct_answers"], results["total_answers"])
+    await results_srvice.add_results(quiz_id, company.id, current_user.id, results["correct_answers"],
+                                     results["total_answers"])
     logging.info(f"Total score for user {current_user.id} is {results}")
     return f"Total score for user {current_user.id} is {results}"
 
