@@ -11,8 +11,7 @@ async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False
 
 
 async def get_redis():
-    redis_pool = await aioredis.from_url(conf.redis_url)
-    yield redis_pool
+    return await aioredis.Redis(host=conf.redis_host, port=conf.redis_port, db=0)
 
 
 async def get_db():

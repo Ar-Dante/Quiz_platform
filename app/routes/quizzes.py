@@ -12,6 +12,7 @@ from app.services.companies import CompanyService
 from app.services.company_members import CompanyMembersService
 from app.services.questions import QuestionService
 from app.services.quizzes import QuizService
+from app.services.redis import RedisService, redis_service
 from app.services.results import ResultsService
 from app.services.users import UsersService
 
@@ -87,7 +88,7 @@ async def submit_quizz(company_id: int,
                        questions_service: QuestionService = Depends(questions_service),
                        comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
                        results_srvice: ResultsService = Depends(results_service),
-                       current_user: dict = Depends(auth_service.get_current_user)
+                       current_user: dict = Depends(auth_service.get_current_user),
                        ):
     company = await companies_service.get_company_by_id(company_id, current_user.id)
     member = await comp_memb_service.get_member(current_user.id, company_id)
@@ -96,6 +97,8 @@ async def submit_quizz(company_id: int,
     results = await quizzes_service.quizz_submit(question, body, member, company, current_user.id)
     await results_srvice.add_results(quiz_id, company.id, current_user.id, results["correct_answers"],
                                      results["total_answers"])
+    await redis_service.store_results(quiz.id, company.id, current_user.id, results["correct_answers"],
+                                      results["total_answers"])
     logging.info(f"Total score for user {current_user.id} is {results}")
     return f"Total score for user {current_user.id} is {results}"
 
