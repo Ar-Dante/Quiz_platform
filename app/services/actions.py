@@ -145,4 +145,3 @@ class ActionService:
                                                          "action": "request_sent"},
                                                         {"action": "request_refused"})
 
-
