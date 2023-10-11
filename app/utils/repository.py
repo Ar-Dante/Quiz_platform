@@ -96,13 +96,13 @@ class SQLAlchemyRepository(AbstractRepository):
             await session.commit()
 
 
-class RedisDataService:
+class RedisDataRepository:
     async def store_data(self, redis: Redis, key: str, data: str, expiration_hours: int = 48):
         await redis.set(key, data)
         await redis.expire(key, timedelta(hours=expiration_hours))
 
     async def get_data(self, redis: Redis, key: str):
-        return await redis.hgetall(key)
+        return await redis.get(key)
 
     async def delete_data(self, redis: Redis, key: str):
         return await redis.delete(key)
