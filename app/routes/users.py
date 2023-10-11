@@ -125,7 +125,7 @@ async def send_request(
     user = await users_service.get_user_by_id(user_id)
     company = await companies_service.get_company_by_id(company_id, current_user.id)
     member = await comp_memb_service.get_member(user.id, company_id)
-    await actions_service.send_request(user.id, company.id, current_user.id, member)
+    await actions_service.send_request(user.id, company, current_user.id, member)
     logging.info(f"Request to company: {company_id} was sent")
     return f"Request to company: {company_id} was sent"
 

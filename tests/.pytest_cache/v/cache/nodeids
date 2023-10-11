@@ -1,0 +1,10 @@
+[
+  "health_test.py::test_health_check",
+  "user_rep_test.py::test_create",
+  "user_rep_test.py::test_create_user",
+  "user_route_test.py::test_create_user",
+  "user_route_test.py::test_delete_user",
+  "user_route_test.py::test_get_users",
+  "user_route_test.py::test_read_user",
+  "user_route_test.py::test_update_user"
+]

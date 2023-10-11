@@ -49,6 +49,19 @@ async def get_company_members(
     return await comp_memb_service.get_company_members(company, limit, offset)
 
 
+@route.get("/company_admins/{company_id}", response_model=List[MemberBase])
+async def get_company_admins(
+        company_id: int,
+        limit: int = Query(10, le=300),
+        offset: int = 0,
+        companies_service: CompanyService = Depends(company_service),
+        current_user: dict = Depends(auth_service.get_current_user),
+        comp_memb_service: CompanyMembersService = Depends(comp_memb_service)
+):
+    company = await companies_service.get_company_by_id(company_id, current_user.id)
+    return await comp_memb_service.get_company_admins(company, limit, offset)
+
+
 @route.get("/{company_id}", response_model=CompanyDetail)
 async def read_company(company_id: int,
                        companies_service: CompanyService = Depends(company_service),
@@ -172,6 +185,22 @@ async def refuse_request(
     return f"Request from user: {user_id} was refused"
 
 
+@route.put("/add_admin/{user_id}/{company_id}")
+async def add_admin(
+        user_id: int,
+        company_id: int,
+        current_user: dict = Depends(auth_service.get_current_user),
+        companies_service: CompanyService = Depends(company_service),
+        comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
+        users_service: UsersService = Depends(users_service)
+):
+    user = await users_service.get_user_by_id(user_id)
+    company = await companies_service.get_company_by_id(company_id, current_user.id)
+    await comp_memb_service.add_admin(user.id, company, current_user.id)
+    logging.info(f"User: {user_id} was named admin in company: {company_id}")
+    return f"User: {user_id} was named admin in company: {company_id}"
+
+
 @route.delete("/remove_member/{user_id}/{company_id}")
 async def remove_member(
         user_id: int,
@@ -186,3 +215,19 @@ async def remove_member(
     await comp_memb_service.delete_from_company(user.id, company, current_user.id)
     logging.info(f"User: {user_id} was removed from company: {company_id}")
     return f"User: {user_id} was removed from company: {company_id}"
+
+
+@route.delete("/remove_admin/{user_id}/{company_id}")
+async def remove_admin(
+        user_id: int,
+        company_id: int,
+        current_user: dict = Depends(auth_service.get_current_user),
+        companies_service: CompanyService = Depends(company_service),
+        comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
+        users_service: UsersService = Depends(users_service)
+):
+    user = await users_service.get_user_by_id(user_id)
+    company = await companies_service.get_company_by_id(company_id, current_user.id)
+    await comp_memb_service.remove_admin(user.id, company, current_user.id)
+    logging.info(f"User: {user_id} has been removed from the admins in company: {company_id}")
+    return f"User: {user_id} has been removed from the admins in company: {company_id}"
