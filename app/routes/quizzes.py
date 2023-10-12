@@ -7,7 +7,9 @@ from app.repository.dependencies import company_service, quizzes_service, comp_m
     results_service
 from app.schemas.questions_schemas import QuestionCreateModel, QuestionUpdateModel, QuestionDetail
 from app.schemas.quizzes_schemas import QuizCreateModel, QuizDetail, QuizUpdateModel
+
 from app.schemas.results_schemas import AverageSystemModel, AverageCompanyModel
+
 from app.services.auth import auth_service, users_service
 from app.services.companies import CompanyService
 from app.services.company_members import CompanyMembersService
