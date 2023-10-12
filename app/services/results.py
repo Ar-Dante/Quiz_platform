@@ -23,12 +23,12 @@ class ResultsService:
             "result_total_count": total_count,
         })
 
-    async def get_company_average_rating(self,
-                                         user_id: int,
-                                         company_id: int,
-                                         member: dict,
-                                         company: dict,
-                                         current_user: int) -> int:
+    async def get_user_average_rating_in_company(self,
+                                                 user_id: int,
+                                                 company_id: int,
+                                                 member: dict,
+                                                 company: dict,
+                                                 current_user: int) -> int:
         if member is None and company.owner_id != current_user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MEMBER_NOT_FOUND)
 

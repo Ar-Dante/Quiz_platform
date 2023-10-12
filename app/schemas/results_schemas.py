@@ -8,5 +8,13 @@ class SaveFormat(str, Enum):
     csv = "csv"
 
 
-class GetResults(BaseModel):
+class GetResultsByFormat(BaseModel):
     save_format: SaveFormat
+
+
+class AverageSystemModel(BaseModel):
+    system_average_rating: float
+
+
+class AverageCompanyModel(BaseModel):
+    company_average_rating: float
