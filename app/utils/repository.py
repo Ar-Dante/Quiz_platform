@@ -3,7 +3,7 @@ from datetime import timedelta
 from typing import Any, Dict, List, Optional
 
 from aioredis import Redis
-from sqlalchemy import insert, select, update, delete
+from sqlalchemy import insert, select, update, delete, func
 
 from app.db.db import async_session
 
@@ -38,6 +38,9 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def get_max_by_filter(self, filter_max, filter_by):
+        raise NotImplementedError
+    @abstractmethod
     async def delete_by_filter(self, filter_by: dict) -> None:
         raise NotImplementedError
 
@@ -64,6 +67,12 @@ class SQLAlchemyRepository(AbstractRepository):
             statement = select(self.model).filter_by(**filter_by).limit(limit).offset(offset)
             res = await session.execute(statement)
             return res.scalars().all()
+
+    async def get_max_by_filter(self, filter_max, filter_by):
+        async with async_session() as session:
+            statement = select(func.max(filter_max)).filter_by(**filter_by)
+            max_value = await session.execute(statement)
+            return max_value.scalar()
 
     async def filter(self, filter_by: dict) -> list:
         async with async_session() as session:

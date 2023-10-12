@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.repository.dependencies import results_service, users_service, company_service, comp_memb_service
-from app.schemas.results_schemas import GetResults
+from app.schemas.results_schemas import GetResultsByFormat, AverageSystemModel, AverageCompanyModel
 from app.services.auth import auth_service
 from app.services.companies import CompanyService
 from app.services.company_members import CompanyMembersService
@@ -12,15 +12,15 @@ from app.services.users import UsersService
 route = APIRouter(prefix="/results", tags=["Results"])
 
 
-@route.get("/{user_id}/system-average-rating")
+@route.get("/{user_id}/system-average-rating", response_model=AverageSystemModel)
 async def get_system_average_rating(user_id: int,
                                     users_service: UsersService = Depends(users_service),
                                     results_srvice: ResultsService = Depends(results_service)):
     user = await users_service.get_user_by_id(user_id)
-    return {"system_average_rating": await results_srvice.get_system_average_rating(user.id)}
+    return AverageSystemModel(system_average_rating=await results_srvice.get_system_average_rating(user.id))
 
 
-@route.get("/{company_id}/{user_id}/average-rating")
+@route.get("/{company_id}/{user_id}/average-rating", response_model=AverageCompanyModel)
 async def company_average_rating(company_id: int,
                                  user_id: int,
                                  users_service: UsersService = Depends(users_service),
@@ -31,16 +31,15 @@ async def company_average_rating(company_id: int,
     company = await companies_service.get_company_by_id(company_id, current_user.id)
     member = await comp_memb_service.get_member(current_user.id, company_id)
     user = await users_service.get_user_by_id(user_id)
-    return {
-        "system_average_rating": await results_srvice.get_company_average_rating(user.id,
-                                                                                 company.id,
-                                                                                 member,
-                                                                                 company,
-                                                                                 current_user.id)}
+    return AverageCompanyModel(company_average_rating=await results_srvice.get_user_average_rating_in_company(user.id,
+                                                                                                              company.id,
+                                                                                                              member,
+                                                                                                              company,
+                                                                                                              current_user.id))
 
 
 @route.post("/user_results/{user_id}")
-async def get_user_results(user_id: int, upload_format: GetResults,
+async def get_user_results(user_id: int, upload_format: GetResultsByFormat,
                            users_service: UsersService = Depends(users_service),
                            current_user: dict = Depends(auth_service.get_current_user)):
     user = await users_service.get_user_by_id(user_id)
@@ -50,7 +49,7 @@ async def get_user_results(user_id: int, upload_format: GetResults,
 @route.post("/user_company_results/{user_id}/{company_id}")
 async def get_user_results_for_company(user_id: int,
                                        company_id: int,
-                                       upload_format: GetResults,
+                                       upload_format: GetResultsByFormat,
                                        current_user: dict = Depends(auth_service.get_current_user),
                                        users_service: UsersService = Depends(users_service),
                                        comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
@@ -67,7 +66,7 @@ async def get_user_results_for_company(user_id: int,
 
 @route.post("/all_company_results/{company_id}")
 async def get_all_results_for_company(company_id: int,
-                                      upload_format: GetResults,
+                                      upload_format: GetResultsByFormat,
                                       current_user: dict = Depends(auth_service.get_current_user),
                                       comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
                                       companies_service: CompanyService = Depends(company_service)):
@@ -83,7 +82,7 @@ async def get_all_results_for_company(company_id: int,
 @route.post("/quizz_company_results/{company_id}/{quizz_id}")
 async def get_quiz_results_for_company(company_id: int,
                                        quiz_id: int,
-                                       upload_format: GetResults,
+                                       upload_format: GetResultsByFormat,
                                        current_user: dict = Depends(auth_service.get_current_user),
                                        comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
                                        companies_service: CompanyService = Depends(company_service)):
