@@ -7,6 +7,7 @@ from app.repository.dependencies import notifications_service
 from app.schemas.notifications_schemas import NotificationsDetail
 from app.services.auth import auth_service
 from app.services.notifications import NotificationsService
+from app.services.schedule_event import schedule_notification_sender
 
 route = APIRouter(prefix="/notifications", tags=["Notifications"])
 
@@ -18,6 +19,11 @@ async def get_notifications(
         current_user: dict = Depends(auth_service.get_current_user),
         notification_service: NotificationsService = Depends(notifications_service)):
     return await notification_service.get_notifications(user_id, current_user.id)
+
+
+@route.get("/Schedule_notification")
+async def schedule_notification():
+    return await schedule_notification_sender()
 
 
 @route.put("/ReadNotifications/{user_id}")

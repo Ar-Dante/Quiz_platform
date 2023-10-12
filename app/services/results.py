@@ -65,6 +65,11 @@ class ResultsService:
             raise HTTPException(status_code=404, detail=ERROR_USER_NOT_FOUND)
         return await self._calculate_average_rating(user_results)
 
+    async def get_last_attempt_time_for_user_quiz(self, user_id: int, quiz_id: int):
+        return await self.results_repo.get_max_by_filter(Result.created_at,
+                                                         {"result_user_id": user_id,
+                                                          "result_quiz_id": quiz_id})
+
     async def get_last_attempt_times_for_all_quizzes(self, quizzes: list):
         quiz_last_attempt_times = []
 

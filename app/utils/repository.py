@@ -18,6 +18,10 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def find_all_without_pagination(self) -> List[Dict[str, Any]]:
+        raise NotImplementedError
+
+    @abstractmethod
     async def find_by_filter(self, filter_by: dict):
         raise NotImplementedError
 
@@ -64,6 +68,12 @@ class SQLAlchemyRepository(AbstractRepository):
         async with async_session() as session:
             statement = select(self.model)
             statement = statement.limit(limit).offset(offset)
+            res = await session.execute(statement)
+            return res.scalars().all()
+
+    async def find_all_without_pagination(self) -> list:
+        async with async_session() as session:
+            statement = select(self.model)
             res = await session.execute(statement)
             return res.scalars().all()
 
