@@ -55,6 +55,9 @@ class CompanyMembersService:
     async def get_company_members(self, company_id: int, limit: int, offset: int):
         return await self.comp_memb_repo.filter_by(limit, offset, {"company_id": company_id})
 
+    async def get_all_members(self, company_id: int):
+        return await self.comp_memb_repo.filter({"company_id": company_id})
+
     async def add_admin(self,
                         user_id: int,
                         company: dict,

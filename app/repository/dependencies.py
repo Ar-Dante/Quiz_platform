@@ -1,6 +1,7 @@
 from app.repository.actions import ActionsRepository
 from app.repository.companies import CompanyRepository
 from app.repository.company_members import CompanyMembersRepository
+from app.repository.notifications import NotificationsRepository
 from app.repository.questions import QuestionsRepository
 from app.repository.quizzes import QuizzesRepository
 from app.repository.results import ResultsRepository
@@ -8,6 +9,7 @@ from app.repository.users import UsersRepository
 from app.services.actions import ActionService
 from app.services.companies import CompanyService
 from app.services.company_members import CompanyMembersService
+from app.services.notifications import NotificationsService
 from app.services.questions import QuestionService
 from app.services.quizzes import QuizService
 from app.services.results import ResultsService
@@ -40,3 +42,7 @@ def questions_service():
 
 def results_service():
     return ResultsService(ResultsRepository)
+
+
+def notifications_service():
+    return NotificationsService(NotificationsRepository)

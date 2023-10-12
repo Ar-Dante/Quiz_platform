@@ -25,6 +25,7 @@ class User(Base):
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
     )
     companies = relationship("Company", back_populates="owner")
+    notifications = relationship("Notification", back_populates="user")
 
 
 class Company(Base):
@@ -95,3 +96,15 @@ class Result(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     result_right_count = Column(Integer)
     result_total_count = Column(Integer)
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    text = Column(String)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    is_read = Column(Boolean, default=False)
+
+    user = relationship("User", back_populates="notifications")
