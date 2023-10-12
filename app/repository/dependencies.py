@@ -34,3 +34,7 @@ def quizzes_service():
 
 def questions_service():
     return QuestionService(QuestionsRepository)
+
+def results_service():
+    return ResultsService(ResultsRepository)
+

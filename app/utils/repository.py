@@ -16,7 +16,15 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def find_by_filter(self, filter_by: dict) -> Optional[Dict[str, Any]]:
+    async def find_by_filter(self, filter_by: dict):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def filter_by(self, limit: int, offset: int, filter_by: dict) -> Optional[Dict[str, Any]]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def filter(self, filter_by: dict) -> Optional[Dict[str, Any]]:
         raise NotImplementedError
 
     @abstractmethod
@@ -59,7 +67,13 @@ class SQLAlchemyRepository(AbstractRepository):
             res = await session.execute(statement)
             return res.scalars().all()
 
-    async def find_by_filter(self, filter_by: dict) -> Optional[Dict[str, Any]]:
+    async def filter(self, filter_by: dict) -> list:
+        async with async_session() as session:
+            statement = select(self.model).filter_by(**filter_by)
+            res = await session.execute(statement)
+            return res.scalars().all()
+
+    async def find_by_filter(self, filter_by: dict):
         async with async_session() as session:
             statement = select(self.model).filter_by(**filter_by)
             res = await session.execute(statement)

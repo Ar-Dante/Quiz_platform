@@ -77,9 +77,21 @@ class Question(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     question_text = Column(String, nullable=False)
     question_answers = Column(ARRAY(String), nullable=False)
-    question_correct_answer = Column(Integer, nullable=False)
+    question_correct_answer = Column(String, nullable=False)
     question_quiz_id = Column(Integer, ForeignKey("quizzes.id"))
-    question_company_id = Column(String, ForeignKey("companies.id"))
+    question_company_id = Column(Integer, ForeignKey("companies.id"))
     created_by = Column(Integer, ForeignKey("users.id"))
     updated_by = Column(Integer, ForeignKey("users.id"))
     quiz = relationship("Quiz", back_populates="questions")
+
+
+class Result(Base):
+    __tablename__ = "results"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    result_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    result_company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    result_quiz_id = Column(Integer)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    result_right_count = Column(Integer)
+    result_total_count = Column(Integer)

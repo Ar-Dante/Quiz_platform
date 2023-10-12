@@ -27,4 +27,5 @@ ERROR_MEMBER_OWNER = "The owner can't be member"
 
 
 ERROR_NOT_ENOUGH_OPTIONS = "A question must have at least two answer options."
+ERROR_NOT_ENOUGH_QUESTIONS = "A quiz must have at least two questions options."
 
