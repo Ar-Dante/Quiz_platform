@@ -28,6 +28,10 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def filter_by(self, limit: int, offset: int, filter_by: dict) -> Optional[Dict[str, Any]]:
+        raise NotImplementedError
+
+    @abstractmethod
     async def update_by_filter(self, filter_by: dict, data: dict) -> None:
         raise NotImplementedError
 

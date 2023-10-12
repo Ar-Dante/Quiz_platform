@@ -25,5 +25,7 @@ ERROR_MEMBER_NOT_ADMIN = "User is not an admin in the company"
 ERROR_MEMBER_OWNER_ADMIN = "The owner can't be an admin"
 ERROR_MEMBER_OWNER = "The owner can't be member"
 
+
 ERROR_NOT_ENOUGH_OPTIONS = "A question must have at least two answer options."
 ERROR_NOT_ENOUGH_QUESTIONS = "A quiz must have at least two questions options."
+
