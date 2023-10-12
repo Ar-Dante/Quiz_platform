@@ -92,3 +92,4 @@ class CompanyMembersService:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
         if user_id == current_user:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_OWNER_ADMIN)
+
