@@ -23,6 +23,9 @@ class QuizService:
     async def get_quizzes(self, company_id: int, limit: int, offset: int):
         return await self.quizzes_repo.filter_by(limit, offset, {"quiz_company_id": company_id})
 
+    async def get_all_quizzes(self, limit: int = 10000, offset: int = 0):
+        return await self.quizzes_repo.find_all(limit, offset)
+
     async def get_quiz_by_id(self, quiz_id: int):
         quiz = await self.quizzes_repo.find_by_filter({"id": quiz_id})
         if quiz is None:
