@@ -7,6 +7,7 @@ from app.repository.dependencies import company_service, quizzes_service, comp_m
     results_service
 from app.schemas.questions_schemas import QuestionCreateModel, QuestionUpdateModel, QuestionDetail
 from app.schemas.quizzes_schemas import QuizCreateModel, QuizDetail, QuizUpdateModel
+from app.schemas.result_schemas import AverageSystemModel, AverageCompanyModel
 from app.services.auth import auth_service, users_service
 from app.services.companies import CompanyService
 from app.services.company_members import CompanyMembersService
@@ -51,15 +52,15 @@ async def create_question(company_id: int,
     return f"Question id:{question}"
 
 
-@route.get("/{user_id}/system-average-rating")
+@route.get("/{user_id}/system-average-rating", response_model=AverageSystemModel)
 async def get_system_average_rating(user_id: int,
                                     users_service: UsersService = Depends(users_service),
                                     results_srvice: ResultsService = Depends(results_service)):
     user = await users_service.get_user_by_id(user_id)
-    return {"system_average_rating": await results_srvice.get_system_average_rating(user.id)}
+    return AverageSystemModel(system_average_rating=await results_srvice.get_system_average_rating(user.id))
 
 
-@route.get("/{company_id}/{user_id}/average-rating")
+@route.get("/{company_id}/{user_id}/average-rating", response_model=AverageCompanyModel)
 async def company_average_rating(company_id: int,
                                  user_id: int,
                                  users_service: UsersService = Depends(users_service),
@@ -70,12 +71,11 @@ async def company_average_rating(company_id: int,
     company = await companies_service.get_company_by_id(company_id, current_user.id)
     member = await comp_memb_service.get_member(current_user.id, company_id)
     user = await users_service.get_user_by_id(user_id)
-    return {
-        "system_average_rating": await results_srvice.get_company_average_rating(user.id,
-                                                                                 company.id,
-                                                                                 member,
-                                                                                 company,
-                                                                                 current_user.id)}
+    return AverageCompanyModel(company_average_rating=await results_srvice.get_user_average_rating_in_company(user.id,
+                                                                                                              company.id,
+                                                                                                              member,
+                                                                                                              company,
+                                                                                                              current_user.id))
 
 
 @route.post("/SubmitQuestion")
