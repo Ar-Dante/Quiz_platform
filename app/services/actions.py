@@ -11,15 +11,19 @@ class ActionService:
     def __init__(self, actions_repo: AbstractRepository):
         self.actions_repo: AbstractRepository = actions_repo()
 
+    async def _valid_action_access(self, user_id: int, current_user: int, company_owner: int):
+        if current_user != company_owner:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
+        if user_id == current_user:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_OWNER)
+
     async def send_invitation(self,
                               user_id: int,
                               company_id: int,
                               current_user: int,
                               company: dict,
                               member: dict) -> int:
-        await validate_access(current_user, company.owner_id)
-        if user_id == current_user:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_OWNER)
+        await self._valid_action_access(user_id, current_user.id, company.owner_id)
         if await self.get_actions(user_id, company_id, "invitation_sent"):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_USER_INVITED)
         if member:
@@ -37,9 +41,7 @@ class ActionService:
                            current_user: int,
                            member: dict
                            ):
-        await validate_access(current_user, user_id)
-        if user_id == company.owner_id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MEMBER_OWNER)
+        await self._valid_action_access(user_id, current_user.id, company.owner_id)
         if await self.get_actions(user_id, company.id, "request_sent"):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_USER_REQUEST)
         if member:
@@ -77,7 +79,7 @@ class ActionService:
 
     async def get_user_requests(self, user_id: int, limit: int, offset: int, current_user: int):
         await validate_access(current_user, user_id)
-        return await self.actions_repo.filter_by(limit, offset,  {"action": "request_sent", "user_id": user_id})
+        return await self.actions_repo.filter_by(limit, offset, {"action": "request_sent", "user_id": user_id})
 
     async def get_actions(self, user_id, company_id, action: str):
         return await self.actions_repo.find_by_filter({"user_id": user_id,
@@ -144,4 +146,3 @@ class ActionService:
                                                          "company_id": company.id,
                                                          "action": "request_sent"},
                                                         {"action": "request_refused"})
-

@@ -17,6 +17,8 @@ class FastAPIConfig(BaseSettings):
     port: int = os.getenv("MAIN_PORT")
     reload: bool = os.getenv("RELOAD")
     sqlalchemy_database_url: str = os.getenv("SQLALCHEMY_DATABASE_URL")
+    redis_port: int = os.getenv("REDIS_PORT")
+    redis_host: str = os.getenv("REDIS_HOST")
     redis_url: str = os.getenv("REDIS_URL")
     secret_key: str = os.getenv("SECRET_KEY")
     hash_algorithm: str = os.getenv("ALGORITHM")
