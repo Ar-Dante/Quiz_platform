@@ -10,8 +10,10 @@ from app.utils.upload_data import JSONDataLoader, CSVDataLoader
 
 
 class RedisService(RedisDataRepository):
-    json_loader = JSONDataLoader()
-    csv_loader = CSVDataLoader()
+    def __init__(self):
+        self.redis = get_redis()
+        self.json_loader = JSONDataLoader()
+        self.csv_loader = CSVDataLoader()
 
     async def _save_data(self, data, key, save_format):
         if save_format == "json":
@@ -30,7 +32,7 @@ class RedisService(RedisDataRepository):
                             correct_count: int,
                             total_count: int):
         key = f"quiz_answers:{quiz_id}:{current_user}:{company_id}"
-        redis = await get_redis()
+        redis = await self.redis
         await self.store_data(redis, key, json.dumps({
             "quiz_id": quiz_id,
             "company_id": company_id,
@@ -43,7 +45,7 @@ class RedisService(RedisDataRepository):
     async def get_user_results(self, user_id: int, current_user: int, upload_format: str):
         if user_id != current_user:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
-        redis = await get_redis()
+        redis = await self.redis
         keys = await redis.keys(f"quiz_answers:*:{user_id}:*")
         results = []
 
@@ -51,8 +53,8 @@ class RedisService(RedisDataRepository):
             data = await self.get_data(redis, key)
             if data:
                 results.append(json.loads(data))
-        await self._save_data(results, f"user_id_{user_id}", upload_format)
         await redis.close()
+        await self._save_data(results, f"user_id_{user_id}", upload_format)
         return results
 
     async def get_user_results_for_company(self,
@@ -62,7 +64,7 @@ class RedisService(RedisDataRepository):
                                            company: dict,
                                            upload_format: str):
         await self._valid_access(current_user, member, company)
-        redis = await get_redis()
+        redis = await self.redis
         keys = await redis.keys(f"quiz_answers:*:{user_id}:{company.id}")
 
         results = []
@@ -70,7 +72,6 @@ class RedisService(RedisDataRepository):
             data = await self.get_data(redis, key)
             if data:
                 results.append(json.loads(data))
-
         await redis.close()
         await self._save_data(results, f"user_id_{user_id}_company_id_{company.id}", upload_format)
         return results
@@ -82,7 +83,7 @@ class RedisService(RedisDataRepository):
                                           company: dict,
                                           upload_format: str):
         await self._valid_access(current_user, member, company)
-        redis = await get_redis()
+        redis = await self.redis
         keys = await redis.keys(f"quiz_answers:*:{company_id}")
 
         results = []
@@ -90,7 +91,6 @@ class RedisService(RedisDataRepository):
             data = await self.get_data(redis, key)
             if data:
                 results.append(json.loads(data))
-
         await redis.close()
         await self._save_data(results, f"company_id_{company_id}", upload_format)
         return results
@@ -102,7 +102,7 @@ class RedisService(RedisDataRepository):
                                            company: dict,
                                            upload_format: str):
         await self._valid_access(current_user, member, company)
-        redis = await get_redis()
+        redis = await self.redis
         keys = await redis.keys(f"quiz_answers:{quiz_id}:*")
 
         results = []
@@ -110,7 +110,6 @@ class RedisService(RedisDataRepository):
             data = await self.get_data(redis, key)
             if data:
                 results.append(json.loads(data))
-
         await redis.close()
         await self._save_data(results, f"quiz_id_{quiz_id}", upload_format)
         return results
