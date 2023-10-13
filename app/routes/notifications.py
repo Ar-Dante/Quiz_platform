@@ -20,7 +20,7 @@ async def get_notifications(
     return await notification_service.get_notifications(user_id, current_user.id)
 
 
-@route.put("/ReadNotifications/{user_id}")
+@route.put("/notification/{user_id}")
 async def read_notification(
         user_id: int,
         notification_id: int,
