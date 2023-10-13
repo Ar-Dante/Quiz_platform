@@ -19,6 +19,9 @@ class CompanyService:
         companies = await self.companies_repo.find_all(limit, offset)
         return [company for company in companies if company.is_visible or current_user == company.owner_id]
 
+    async def get_all_companies(self):
+        return await self.companies_repo.find_all_without_pagination()
+
     async def get_company_by_id(self, company_id: int, current_user: int):
         filter_by = {"id": company_id}
         company = await self.companies_repo.find_by_filter(filter_by)

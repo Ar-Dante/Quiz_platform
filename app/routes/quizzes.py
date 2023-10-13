@@ -4,20 +4,17 @@ from typing import List
 from fastapi import APIRouter, Depends, Query
 
 from app.repository.dependencies import company_service, quizzes_service, comp_memb_service, questions_service, \
-    results_service
+    results_service, notifications_service
 from app.schemas.questions_schemas import QuestionCreateModel, QuestionUpdateModel, QuestionDetail
 from app.schemas.quizzes_schemas import QuizCreateModel, QuizDetail, QuizUpdateModel
-
-from app.schemas.results_schemas import AverageSystemModel, AverageCompanyModel
-
-from app.services.auth import auth_service, users_service
+from app.services.auth import auth_service
 from app.services.companies import CompanyService
 from app.services.company_members import CompanyMembersService
+from app.services.notifications import NotificationsService
 from app.services.questions import QuestionService
 from app.services.quizzes import QuizService
 from app.services.redis import redis_service
 from app.services.results import ResultsService
-from app.services.users import UsersService
 
 route = APIRouter(prefix="/quizzes", tags=["Quizzes"])
 
@@ -28,11 +25,14 @@ async def create_quiz(company_id: int,
                       companies_service: CompanyService = Depends(company_service),
                       quizzes_service: QuizService = Depends(quizzes_service),
                       comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
+                      notification_service: NotificationsService = Depends(notifications_service),
                       current_user: dict = Depends(auth_service.get_current_user)
                       ):
     company = await companies_service.get_company_by_id(company_id, current_user.id)
     member = await comp_memb_service.get_member(current_user.id, company_id)
+    members = await comp_memb_service.get_all_members(company_id)
     quiz = await quizzes_service.create_quiz(company, body, member, current_user.id)
+    await notification_service.add_notifications_about_create_quizz(members, quiz)
     logging.info(f"Quiz:{quiz} was created")
     return f"Quiz id:{quiz}"
 
@@ -53,32 +53,6 @@ async def create_question(company_id: int,
     question = await questions_service.create_question(quiz, body, member, company, current_user.id)
     logging.info(f"Question:{question} was created")
     return f"Question id:{question}"
-
-
-@route.get("/{user_id}/system-average-rating", response_model=AverageSystemModel)
-async def get_system_average_rating(user_id: int,
-                                    users_service: UsersService = Depends(users_service),
-                                    results_srvice: ResultsService = Depends(results_service)):
-    user = await users_service.get_user_by_id(user_id)
-    return AverageSystemModel(system_average_rating=await results_srvice.get_system_average_rating(user.id))
-
-
-@route.get("/{company_id}/{user_id}/average-rating", response_model=AverageCompanyModel)
-async def company_average_rating(company_id: int,
-                                 user_id: int,
-                                 users_service: UsersService = Depends(users_service),
-                                 results_srvice: ResultsService = Depends(results_service),
-                                 comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
-                                 companies_service: CompanyService = Depends(company_service),
-                                 current_user: dict = Depends(auth_service.get_current_user)):
-    company = await companies_service.get_company_by_id(company_id, current_user.id)
-    member = await comp_memb_service.get_member(current_user.id, company_id)
-    user = await users_service.get_user_by_id(user_id)
-    return AverageCompanyModel(company_average_rating=await results_srvice.get_user_average_rating_in_company(user.id,
-                                                                                                              company.id,
-                                                                                                              member,
-                                                                                                              company,
-                                                                                                              current_user.id))
 
 
 @route.post("/SubmitQuestion")
