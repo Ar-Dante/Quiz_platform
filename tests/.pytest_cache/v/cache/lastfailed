@@ -4,5 +4,16 @@
   "user_route_test.py::test_read_user": true,
   "user_route_test.py::test_get_users": true,
   "user_route_test.py": true,
-  "user_route_test.py::test_create_user": true
+  "user_route_test.py::test_create_user": true,
+  "companies_servise_test.py": true,
+  "companies_servise_test.py::test_get_company_by_id_exceptions": true,
+  "companies_servise_test.py::test_get_companies": true,
+  "companies_servise_test.py::test_update_company_access_denied": true,
+  "company_members_service_test.py::test_exit_from_company_member_not_found": true,
+  "company_members_service_test.py::test_delete_from_company_valid": true,
+  "company_members_service_test.py": true,
+  "company_members_service_test.py::test_delete_from_company_member_not_found": true,
+  "company_members_service_test.py::test_delete_from_company_success": true,
+  "question_service_test.py::test_remove_question_member_company_conditions": true,
+  "quizzes_service_test.py::test_create_quiz_access_denied": true
 }
