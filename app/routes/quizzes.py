@@ -4,15 +4,17 @@ from typing import List
 from fastapi import APIRouter, Depends, Query
 
 from app.repository.dependencies import company_service, quizzes_service, comp_memb_service, questions_service, \
-    results_service
+    results_service, notifications_service
 from app.schemas.questions_schemas import QuestionCreateModel, QuestionUpdateModel, QuestionDetail
 from app.schemas.quizzes_schemas import QuizCreateModel, QuizDetail, QuizUpdateModel
 from app.services.auth import auth_service
 from app.services.companies import CompanyService
 from app.services.company_members import CompanyMembersService
+from app.services.notifications import NotificationsService
 from app.services.questions import QuestionService
 from app.services.quizzes import QuizService
 from app.services.redis import redis_service
+from app.services.results import ResultsService
 from app.services.results import ResultsService
 
 route = APIRouter(prefix="/quizzes", tags=["Quizzes"])

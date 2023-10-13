@@ -146,4 +146,3 @@ class ActionService:
                                                          "company_id": company.id,
                                                          "action": "request_sent"},
                                                         {"action": "request_refused"})
-
