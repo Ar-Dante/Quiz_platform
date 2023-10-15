@@ -16,7 +16,7 @@ class ResultsService:
         if company.owner_id != current_user and not member.is_admin:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_ACCESS)
 
-    async def _calculate_average_rating(self, user_results):
+    async def calculate_average_rating(self, user_results):
         total_right_count = sum(result.result_right_count for result in user_results)
         total_total_count = sum(result.result_total_count for result in user_results)
         return total_right_count / total_total_count if total_total_count > 0 else 0.0
@@ -52,7 +52,7 @@ class ResultsService:
         )
         if not user_results:
             raise HTTPException(status_code=404, detail=ERROR_USER_NOT_FOUND)
-        return await self._calculate_average_rating(user_results)
+        return await self.calculate_average_rating(user_results)
 
     async def get_system_average_rating(self,
                                         user_id: int) -> int:
@@ -63,7 +63,7 @@ class ResultsService:
         )
         if not user_results:
             raise HTTPException(status_code=404, detail=ERROR_USER_NOT_FOUND)
-        return await self._calculate_average_rating(user_results)
+        return await self.calculate_average_rating(user_results)
 
     async def get_last_attempt_times_for_all_quizzes(self, quizzes: list):
         quiz_last_attempt_times = []
@@ -87,7 +87,7 @@ class ResultsService:
             last_attempt_date = await self.results_repo.get_max_by_filter(Result.created_at,
                                                                           {"result_quiz_id": quiz.id})
             quizz = await self.results_repo.filter({"result_quiz_id": quiz.id})
-            average_quizz = await self._calculate_average_rating(quizz)
+            average_quizz = await self.calculate_average_rating(quizz)
 
             average_quiz.append({
                 "quiz_id": quiz.id,
@@ -118,12 +118,12 @@ class ResultsService:
 
         for user in users:
             last_attempt_date = await self.results_repo.get_max_by_filter(Result.created_at,
-                                                                          {"result_user_id": user.id})
-            userss = await self.results_repo.filter({"result_user_id": user.id})
-            average_user = await self._calculate_average_rating(userss)
+                                                                          {"result_user_id": user.user_id})
+            userss = await self.results_repo.filter({"result_user_id": user.user_id})
+            average_user = await self.calculate_average_rating(userss)
 
             average_users.append({
-                "user_id": user.id,
+                "user_id": user.user_id,
                 "average_user": average_user,
                 "last_attempt_date": last_attempt_date,
             })
@@ -145,7 +145,7 @@ class ResultsService:
             userss = await self.results_repo.filter({"result_quiz_id": quiz.id,
                                                      "result_user_id": users_id,
                                                      "result_company_id": company.id})
-            average_user = await self._calculate_average_rating(userss)
+            average_user = await self.calculate_average_rating(userss)
 
             average_quiz.append({
                 "user_id": users_id,
