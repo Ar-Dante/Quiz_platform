@@ -18,6 +18,11 @@ class NotificationsService:
             await self.notifications_repo.add_one({"user_id": user.user_id,
                                                    "text": f"Quiz {quiz_id} was created, you can submit it!!!"})
 
+    async def add_notifications_about_time_to_quizz(self, user_id: int, quiz_id: int):
+        await self.notifications_repo.add_one({"user_id": user_id,
+                                               "text": f"The time for quiz: {quiz_id} limits is over,"
+                                                       f" it's time to try your hand again. "})
+
     async def get_notifications(self, user_id: int, current_user: int):
         await self._validate_notification_access(user_id, current_user)
         return await self.notifications_repo.filter({"user_id": user_id})
