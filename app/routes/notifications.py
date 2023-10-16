@@ -12,8 +12,7 @@ from app.services.schedule_event import schedule_notification_sender
 route = APIRouter(prefix="/notifications", tags=["Notifications"])
 
 
-# response_model=List[NotificationsDetail]
-@route.get("/Notifications/{user_id}", response_model=List[NotificationsDetail])
+@route.get("/notifications/{user_id}", response_model=List[NotificationsDetail])
 async def get_notifications(
         user_id: int,
         current_user: dict = Depends(auth_service.get_current_user),
@@ -21,12 +20,12 @@ async def get_notifications(
     return await notification_service.get_notifications(user_id, current_user.id)
 
 
-@route.get("/Schedule_notification")
+@route.get("/schedule_notification")
 async def schedule_notification():
     return await schedule_notification_sender()
 
 
-@route.put("/ReadNotifications/{user_id}")
+@route.put("/notification/{user_id}")
 async def read_notification(
         user_id: int,
         notification_id: int,
