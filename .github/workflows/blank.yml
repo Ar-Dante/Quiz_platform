@@ -1,7 +1,6 @@
 
 
 name: Deploy FastAPI internship project
-
 on:
   push:
     branches: [ dev ]
