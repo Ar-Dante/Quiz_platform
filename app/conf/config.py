@@ -20,6 +20,7 @@ class FastAPIConfig(BaseSettings):
     sqlalchemy_database_url_prod: str = os.getenv("SQLALCHEMY_DATABASE_URL_PROD")
     redis_port: int = os.getenv("REDIS_PORT")
     redis_host: str = os.getenv("REDIS_HOST")
+    redis_endpoint_prod: str = os.getenv("REDIS_ENDPOINT_PROD")
     redis_url: str = os.getenv("REDIS_URL")
     secret_key: str = os.getenv("SECRET_KEY")
     hash_algorithm: str = os.getenv("ALGORITHM")
