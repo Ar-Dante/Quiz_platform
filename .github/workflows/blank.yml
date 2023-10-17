@@ -6,7 +6,6 @@ on:
     branches: [ be-20-deploy ]
   pull_request:
     branches: [ be-20-deploy ]
-
   workflow_dispatch:
 
 jobs:
