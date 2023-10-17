@@ -32,4 +32,4 @@ app.include_router(results.route)
 app.include_router(analitics.route)
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host=conf.host, port=conf.port, reload=conf.reload)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=conf.reload)
