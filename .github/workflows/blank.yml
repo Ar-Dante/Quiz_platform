@@ -45,6 +45,7 @@ jobs:
           docker build -t fast_api_deploy_repository .
           docker tag fast_api_deploy_repository:latest 195766531418.dkr.ecr.us-east-1.amazonaws.com/fast_api_deploy_repository:latest
           docker push 195766531418.dkr.ecr.us-east-1.amazonaws.com/fast_api_deploy_repository:latest
+          echo "::set-output name=image::195766531418.dkr.ecr.us-east-1.amazonaws.com/fast_api_deploy_repository:latest"
 
       - name: Download task definition
         run: |
