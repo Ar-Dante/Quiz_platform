@@ -29,3 +29,5 @@ ERROR_NOT_ENOUGH_OPTIONS = "A question must have at least two answer options."
 ERROR_NOT_ENOUGH_QUESTIONS = "A quiz must have at least two questions options."
 
 ERROR_INVALID_SAVE_FORMAT = "Invalid save_format. Use 'json' or 'csv'."
+ERROR_EXCEL_IMPORT = "Error when try import excel"
+ERROR_NOT_EXCEL_FORMAT = "File format should be .xlsx"

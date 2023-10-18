@@ -56,6 +56,12 @@ class QuestionService:
         await self.get_question_by_id(quiz_id, question_id)
         await self.questions_repo.delete_by_id(question_id)
 
+    async def remove_questions_for_quiz(self, quiz_id: int, company: dict, member: dict, current_user: int):
+        await self.valid_question_access(current_user, member, company)
+        questions = await self.questions_repo.filter({"question_quiz_id": quiz_id})
+        for question in questions:
+            await self.questions_repo.delete_by_id(question.id)
+
     async def get_question_by_id(self,
                                  quiz_id: int,
                                  question_id: int):
