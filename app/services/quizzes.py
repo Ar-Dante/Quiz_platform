@@ -34,7 +34,7 @@ class QuizService:
 
     async def update_quiz(self, quiz_id: int, company: dict, data: QuizUpdateModel, member: dict, current_user: int):
         await self.valid_quiz_access(current_user, member, company)
-        await self.get_quiz_by_id(quiz_id, company.id)
+        await self.get_quiz_by_id(quiz_id)
         quiz_dict = data.model_dump()
         quiz_dict.update({
             "updated_by": current_user
@@ -43,7 +43,7 @@ class QuizService:
 
     async def remove_quiz(self, quiz_id: int, company: dict, member: dict, current_user: int):
         await self.valid_quiz_access(current_user, member, company)
-        await self.get_quiz_by_id(quiz_id, company.id)
+        await self.get_quiz_by_id(quiz_id)
         return await self.quizzes_repo.delete_by_id(quiz_id)
 
     async def valid_quiz_access(self, current_user: int, member: dict, company: dict):
