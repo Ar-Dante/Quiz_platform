@@ -3,9 +3,9 @@
 name: Deploy FastAPI internship project
 on:
   push:
-    branches: [ be-22-deploy-heroku ]
+    branches: [ dev ]
   pull_request:
-    branches: [ be-22-deploy-heroku ]
+    branches: [ dev ]
   workflow_dispatch:
 
 jobs:
