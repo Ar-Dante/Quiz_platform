@@ -191,4 +191,6 @@ async def test_get_quiz_results_for_company_access_error():
             results = redis_service.get_quiz_results_for_company(quiz_id, current_user, member, company,
                                                                  upload_format)
 
+
     assert results is not None
+
