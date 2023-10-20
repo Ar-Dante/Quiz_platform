@@ -15,6 +15,8 @@ async def get_redis():
     return redis.Redis(host=conf.redis_endpoint_prod, db=0)
 
 
+
+
 async def get_db():
     async with async_session() as db:
         yield db
