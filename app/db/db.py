@@ -1,4 +1,4 @@
-import aioredis
+import redis.asyncio as redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -12,7 +12,7 @@ async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False
 
 
 async def get_redis():
-    return await aioredis.Redis(host=conf.redis_endpoint_prod, db=0)
+    return redis.Redis(host=conf.redis_endpoint_prod, db=0)
 
 
 async def get_db():
