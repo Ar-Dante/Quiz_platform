@@ -1,8 +1,0 @@
-.git
-.github
-.gitignore
-*.pyc
-.idea
-
-__pycache__
-postgres-data

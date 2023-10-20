@@ -1,7 +1,3 @@
 .env
-
 .idea
 __pycache__
-postgres-data
-
-meduzzen_intern.log
