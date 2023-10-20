@@ -38,5 +38,4 @@ async def check_redis_connection(redis: aioredis.Redis = Depends(get_redis)):
         return {"status_code": 200, "detail": "ok", "result": "working"}
 
     except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail=e)
+        raise HTTPException(status_code=500, detail="Error connecting to the database")
