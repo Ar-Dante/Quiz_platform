@@ -7,7 +7,7 @@ from app.conf.config import conf
 from app.routes import health, users, auth, companies, quizzes, results, notifications, analitics
 from app.services.schedule_event import schedule_notification_sender
 
-app = FastAPI()
+app = FastAPI(title="Meduzzen_internship_fastAPI")
 
 scheduler = AsyncIOScheduler()
 

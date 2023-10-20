@@ -60,3 +60,4 @@ async def test_check_redis_connection_redis_error():
 
     assert exc_info.value.status_code == 500
     assert exc_info.value.detail == "Error connecting to the database"
+

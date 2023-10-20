@@ -5,13 +5,14 @@ from sqlalchemy.orm import sessionmaker
 
 from app.conf.config import conf
 
-engine = create_async_engine(conf.sqlalchemy_database_url_prod, echo=True)
+SQL_ALCHEMY_URL_PROD = f"postgresql+asyncpg://{conf.db_user_prod}:{conf.db_password_prod}@{conf.db_endpoint_prod}:{conf.db_port_prod}"
+engine = create_async_engine(SQL_ALCHEMY_URL_PROD, echo=True)
 
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
 async def get_redis():
-    return await aioredis.Redis(host=conf.redis_host, port=conf.redis_port, db=0)
+    return await aioredis.Redis(host=conf.redis_endpoint_prod, db=0)
 
 
 async def get_db():
