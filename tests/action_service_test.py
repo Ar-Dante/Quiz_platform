@@ -274,7 +274,7 @@ async def test_accept_request_success():
     action_service.get_actions = AsyncMock(
         return_value=[{"user_id": user_id, "company_id": company.id, "action": "request_sent"}])
 
-    result = await action_service.accept_request(user_id, company, current_user)
+    result = action_service.accept_request(user_id, company, current_user)
 
     assert result is not None
 

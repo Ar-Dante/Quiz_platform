@@ -27,5 +27,14 @@
   "question_service_test.py::test_remove_question_question_not_found": true,
   "redis_service_test.py::test_get_all_results_for_company_invalid_access": true,
   "user_route_test.py::test_signup": true,
-  "user_route_test.py::test_delete_user": true
+  "user_route_test.py::test_delete_user": true,
+  "redis_service_tests.py::test_save_data_invalid_format": true,
+  "redis_service_tests.py::test_valid_access_owner": true,
+  "redis_service_tests.py::test_valid_access_member_not_admin": true,
+  "redis_service_tests.py::test_valid_access_member_not_exists": true,
+  "redis_service_test.py": true,
+  "redis_service_test.py::test_get_quiz_results_for_company_access_granted": true,
+  "health_test.py::test_check_db_connection_db_not_configured": true,
+  "company_route_test.py::test_get_companies": true,
+  "company_route_test.py::test_create_company": true
 }
