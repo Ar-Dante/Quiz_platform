@@ -1,7 +1,8 @@
 import logging
 
-import aioredis
+
 from fastapi import APIRouter, Depends, HTTPException
+from redis.asyncio import Redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -31,7 +32,7 @@ async def check_db_connection(db: AsyncSession = Depends(get_db)):
 
 
 @route.get("/check_redis")
-async def check_redis_connection(redis: aioredis.Redis = Depends(get_redis)):
+async def check_redis_connection(redis: Redis = Depends(get_redis)):
     try:
         await redis.ping()
         logging.info("Connection to Redis was successful")

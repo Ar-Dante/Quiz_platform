@@ -68,3 +68,4 @@ jobs:
           service: fast_api_service
           cluster: fastapi_cluster
           wait-for-service-stability: true
+

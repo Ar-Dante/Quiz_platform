@@ -190,5 +190,6 @@ async def test_get_quiz_results_for_company_access_error():
         with patch.object(RedisService, 'get_data', return_value='{"result": "some data"}'):
             results = redis_service.get_quiz_results_for_company(quiz_id, current_user, member, company,
                                                                  upload_format)
+
     assert results is not None
 

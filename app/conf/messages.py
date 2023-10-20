@@ -33,3 +33,6 @@ ERROR_INVALID_SAVE_FORMAT = "Invalid save_format. Use 'json' or 'csv'."
 ERROR_EXCEL_IMPORT = "Error when try import excel"
 ERROR_NOT_EXCEL_FORMAT = "File format should be .xlsx"
 
+ERROR_EXCEL_IMPORT = "Error when try import excel"
+ERROR_NOT_EXCEL_FORMAT = "File format should be .xlsx"
+

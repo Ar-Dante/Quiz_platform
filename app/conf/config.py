@@ -20,13 +20,7 @@ class FastAPIConfig(BaseSettings):
     db_password_prod: str = os.getenv("POSTGRES_PASSWORD_PROD")
     db_endpoint_prod: str = os.getenv("POSTGRES_ENDPOINT")
     db_port_prod: int = os.getenv("POSTGRES_PORT_PROD")
-
-    sqlalchemy_url: str = os.getenv("SQLALCHEMY_DATABASE_URL")
-
-    redis_port: int = os.getenv("REDIS_PORT")
-    redis_host: str = os.getenv("REDIS_HOST")
     redis_endpoint_prod: str = os.getenv("REDIS_ENDPOINT_PROD")
-    redis_url: str = os.getenv("REDIS_URL")
     secret_key: str = os.getenv("SECRET_KEY")
     hash_algorithm: str = os.getenv("ALGORITHM")
     secret_auth_key: str = os.getenv("SECRET_AUTH_KEY")
