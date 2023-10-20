@@ -69,6 +69,7 @@ jobs:
           cluster: fastapi_cluster
           wait-for-service-stability: true
 
+
       - name: Build, Push and Release a Docker container to Heroku.
         uses: gonuit/heroku-docker-deploy@v1.3.3
         with:
@@ -78,3 +79,4 @@ jobs:
 
           docker_options: "--no-cache"
           process_type: web
+
