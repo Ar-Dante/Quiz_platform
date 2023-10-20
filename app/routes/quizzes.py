@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, UploadFile
 
 from app.repository.dependencies import company_service, quizzes_service, comp_memb_service, questions_service, \
     results_service, notifications_service
@@ -10,6 +10,7 @@ from app.schemas.quizzes_schemas import QuizCreateModel, QuizDetail, QuizUpdateM
 from app.services.auth import auth_service
 from app.services.companies import CompanyService
 from app.services.company_members import CompanyMembersService
+from app.services.excel_actions import import_quiz_from_excel, update_quiz_from_excel
 from app.services.notifications import NotificationsService
 from app.services.questions import QuestionService
 from app.services.quizzes import QuizService
@@ -35,6 +36,31 @@ async def create_quiz(company_id: int,
     await notification_service.add_notifications_about_create_quizz(members, quiz)
     logging.info(f"Quiz:{quiz} was created")
     return f"Quiz id:{quiz}"
+
+
+@route.post("/import_quiz_from_excel/")
+async def import_quiz(company_id: int,
+                      file: UploadFile,
+                      companies_service: CompanyService = Depends(company_service),
+                      comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
+                      current_user: dict = Depends(auth_service.get_current_user)):
+    company = await companies_service.get_company_by_id(company_id, current_user.id)
+    member = await comp_memb_service.get_member(current_user.id, company_id)
+    await import_quiz_from_excel(file, company, member, current_user.id)
+    return {"message": "Quiz was successfully created!!!"}
+
+
+@route.post("/update_quiz_from_excel/")
+async def update_quizz_from_excel(company_id: int,
+                                  quiz_id: int,
+                                  file: UploadFile,
+                                  companies_service: CompanyService = Depends(company_service),
+                                  comp_memb_service: CompanyMembersService = Depends(comp_memb_service),
+                                  current_user: dict = Depends(auth_service.get_current_user)):
+    company = await companies_service.get_company_by_id(company_id, current_user.id)
+    member = await comp_memb_service.get_member(current_user.id, company_id)
+    await update_quiz_from_excel(file, quiz_id, company, member, current_user.id)
+    return {"message": "Quiz was successfully updated!!!"}
 
 
 @route.post("/createQuestion")
