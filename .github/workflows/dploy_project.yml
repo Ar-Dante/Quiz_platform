@@ -3,7 +3,7 @@
 name: Deploy FastAPI internship project
 on:
   push:
-    branches: [ dev ]
+    branches: [ be-20-deploy ]
   pull_request:
     branches: [ dev ]
   workflow_dispatch:
