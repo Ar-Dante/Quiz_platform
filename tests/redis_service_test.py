@@ -192,3 +192,4 @@ async def test_get_quiz_results_for_company_access_error():
                                                                  upload_format)
 
     assert results is not None
+
