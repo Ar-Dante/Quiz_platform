@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import timedelta
 from typing import Any, Dict, List, Optional
 
-from aioredis import Redis
+from redis.asyncio import Redis
 from sqlalchemy import insert, select, update, delete, func
 
 from app.db.db import async_session
