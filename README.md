@@ -1,7 +1,7 @@
 <h3>Quiz_platform </h3>
 
 Description:
-A FastAPI-based web application following best practices for building a robust backend system. The project focuses on user management, company management, quizzes, analytics, notifications, and more.
+A FastAPI-based web application following best practices. The project focuses on user management, company management, quizzes, analytics, notifications, and more.
 
 
 **Key Features:**
