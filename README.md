@@ -2,22 +2,22 @@
 Description:
 A FastAPI-based web application following best practices for building a robust backend system. The project focuses on user management, company management, quizzes, analytics, notifications, and more.
 
-Key Features:
+**Key Features:**
+- User management with authentication and authorization.
+- Company creation and management with roles.
+- Quiz creation and user participation.
+- Data storage in PostgreSQL and Redis.
+- Notifications and scheduled script for user engagement.
+- Exporting data to JSON and CSV.
+- Deployment on AWS with GitHub Actions.
+- Role-based access control for secure operations.
+- Integration with external services like Auth0.
+- User profile customization with avatars.
+- Email notifications for important events.
+- Continuous Integration (CI) and Continuous Deployment (CD) workflows.
+- Comprehensive test coverage for code quality assurance.
+- Data import from Excel for quiz management.
 
-User management with authentication and authorization.
-Company creation and management with roles.
-Quiz creation and user participation.
-Data storage in PostgreSQL and Redis.
-Notifications and scheduled script for user engagement.
-Exporting data to JSON and CSV.
-Deployment on AWS with GitHub Actions.
-Role-based access control for secure operations.
-Integration with external services like Auth0.
-User profile customization with avatars.
-Email notifications for important events.
-Continuous Integration (CI) and Continuous Deployment (CD) workflows.
-Comprehensive test coverage for code quality assurance.
-Data import from Excel for quiz management.
 
 <h3>To run the application locally , follow these steps:</h3>
 Clone the Repository:
